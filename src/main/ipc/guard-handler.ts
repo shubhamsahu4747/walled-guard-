@@ -6,6 +6,7 @@ import { scan, computeContentHash } from '../../scanner';
 import { showConfirmDialog } from '../dialog/confirm-dialog';
 import { getSettings } from './settings-handler';
 import { logEvent } from '../store/db';
+import { recordDomDecision } from '../network/upload-guard';
 import { logger } from '../../shared/logger';
 
 function inferFileType(name?: string, mime?: string): FileType | null {
@@ -53,6 +54,9 @@ export function registerGuardHandler(getParentWindow: () => BaseWindow | null): 
       const win = getParentWindow();
       decision = await showConfirmDialog(win, req, verdict);
     }
+
+    // Record DOM decision in network safety net cache
+    recordDomDecision(contentHash, decision);
 
     // Snippet logging is strictly opt-in and capped to 80 chars (Privacy P1)
     let snippet: string | null = null;

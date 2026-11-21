@@ -1,4 +1,4 @@
-import { BaseWindow, WebContentsView } from 'electron';
+import { BaseWindow, WebContentsView, shell } from 'electron';
 import path from 'path';
 import { PERSISTENT_PARTITION, DEFAULT_USER_AGENT } from '../../shared/constants';
 import { applyResponseColor } from '../styling/response-style';
@@ -15,6 +15,42 @@ export interface TabManager {
   updateBounds: () => void;
   getViews: () => Record<TabId, WebContentsView>;
   updateResponseColor: (color: string) => Promise<void>;
+}
+
+function isAllowedNavigation(urlStr: string): boolean {
+  try {
+    const url = new URL(urlStr);
+    const host = url.hostname.toLowerCase();
+    const allowed = [
+      'chatgpt.com',
+      'openai.com',
+      'perplexity.ai',
+      'accounts.google.com',
+      'appleid.apple.com',
+      'auth0.openai.com',
+      'login.live.com'
+    ];
+    return allowed.some((h) => host === h || host.endsWith('.' + h));
+  } catch {
+    return false;
+  }
+}
+
+function configureTabSecurity(view: WebContentsView): void {
+  view.webContents.setWindowOpenHandler(({ url }) => {
+    if (!isAllowedNavigation(url)) {
+      shell.openExternal(url).catch((err) => logger.warn('Failed to open external link:', err));
+      return { action: 'deny' };
+    }
+    return { action: 'allow' };
+  });
+
+  view.webContents.on('will-navigate', (event, url) => {
+    if (!isAllowedNavigation(url)) {
+      event.preventDefault();
+      shell.openExternal(url).catch((err) => logger.warn('Failed to open external link:', err));
+    }
+  });
 }
 
 export function createTabManager(parentWindow: BaseWindow): TabManager {
@@ -35,6 +71,7 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   });
   chatgptView.webContents.setUserAgent(DEFAULT_USER_AGENT);
   chatgptView.webContents.loadURL('https://chatgpt.com');
+  configureTabSecurity(chatgptView);
 
   // Inject CSS on dom-ready, did-finish-load, and in-page navigation (SPA)
   const applyChatGPTStyle = () => {
@@ -56,6 +93,7 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   });
   perplexityView.webContents.setUserAgent(DEFAULT_USER_AGENT);
   perplexityView.webContents.loadURL('https://www.perplexity.ai');
+  configureTabSecurity(perplexityView);
 
   const applyPerplexityStyle = () => {
     applyResponseColor(perplexityView.webContents, getSettings().responseColor, perplexityAdapter);

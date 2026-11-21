@@ -4,7 +4,8 @@ import { configureWebSession } from './window/session';
 import { configureUploadGuard } from './network/upload-guard';
 import { registerGuardHandler } from './ipc/guard-handler';
 import { registerAnalyticsHandler } from './ipc/analytics-handler';
-import { registerSettingsHandler, onSettingsChange } from './ipc/settings-handler';
+import { registerSettingsHandler, onSettingsChange, getSettings } from './ipc/settings-handler';
+import { getEventsRepo } from './store/db';
 import { IPC_CHANNELS } from '../shared/ipc-channels';
 import { TabId } from './window/tabs';
 import { logger } from '../shared/logger';
@@ -36,6 +37,20 @@ async function bootstrap(): Promise<void> {
       appWindow.tabManager.switchTab(tab);
     }
   });
+
+  // Auto-purge events older than retention setting on startup (F4)
+  const settings = getSettings();
+  if (settings.retentionDays > 0) {
+    const cutoff = new Date(Date.now() - settings.retentionDays * 24 * 60 * 60 * 1000);
+    getEventsRepo()
+      .purgeOlderThan(cutoff)
+      .then((count) => {
+        if (count > 0) {
+          logger.info(`Startup auto-purge: deleted ${count} events older than ${settings.retentionDays} days`);
+        }
+      })
+      .catch((err) => logger.warn('Startup retention purge failed:', err));
+  }
 
   logger.info('Application ready and protected.');
 }

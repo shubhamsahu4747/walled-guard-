@@ -63,11 +63,11 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: the dashboard updates live after a real detection and all widgets render with seeded data. (44/44 tests passing)
 
 ## Phase 7: Network safety net and hardening
-- [ ] 7.1 `upload-guard.ts` with decision cache plus single-flight (no double dialogs). [SHOULD]
-- [ ] 7.2 Navigation restrictions, `setWindowOpenHandler`, permission handler, CSP, sandbox verification.
-- [ ] 7.3 Settings tab: marker list, colour picker, fail-closed toggle, snippet-logging toggle, retention. [SHOULD]
-- [ ] 7.4 Error handling pass: scan crash, worker failure, huge file, empty file, password-protected PDF, corrupted image.
-  Done when: no unhandled rejections, a failure results in the fail-closed dialog and not a silent pass.
+- [x] 7.1 `upload-guard.ts` with decision cache plus single-flight (no double dialogs). [SHOULD]
+- [x] 7.2 Navigation restrictions, `setWindowOpenHandler`, permission handler, CSP, sandbox verification.
+- [x] 7.3 Settings tab: marker list, colour picker, fail-closed toggle, snippet-logging toggle, retention. [SHOULD]
+- [x] 7.4 Error handling pass: scan crash, worker failure, huge file, empty file, password-protected PDF, corrupted image.
+  Done when: no unhandled rejections, a failure results in the fail-closed dialog and not a silent pass. (50/50 tests passing)
 
 ## Phase 8: QA
 - [ ] 8.1 Execute the full test matrix in `docs/test-matrix.md` on BOTH sites (A1-A10 plus edge cases: Shift+Enter, IME, multi-file select, large file, same file re-upload after cancel, marker in a different case, marker split across lines).
