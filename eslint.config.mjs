@@ -20,6 +20,6 @@ export default [
     }
   },
   {
-    ignores: ['out/**', 'dist/**', 'node_modules/**', 'UI_Reference-png/**', '*.config.*', 'scripts/**']
+    ignores: ['out/**', 'dist/**', 'node_modules/**', '*.config.*', 'scripts/**']
   }
 ];
