@@ -39,12 +39,12 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: the dialog shows the correct type (prompt/file), name or snippet, and both buttons return the right decision. (31/31 tests passing)
 
 ## Phase 4: In-page gates (web integration)
-- [ ] 4.1 `sites/` adapters for ChatGPT and Perplexity using ONLY the selectors verified in Phase 0.
-- [ ] 4.2 `preload/gates/gate-state.ts` state machine (IDLE, HELD, AWAITING, RELEASED/BLOCKED) and the bypass WeakSet.
-- [ ] 4.3 `prompt-gate.ts`: Enter and send-button, IME-safe, Shift+Enter allowed.
-- [ ] 4.4 `file-gate.ts`: picker, drop, paste. Replay on allow, clear input on cancel.
-- [ ] 4.5 Wire preload to main via the typed bridge. Pick the adapter by hostname.
-  Done when: acceptance A1-A7 and A10 pass manually on ChatGPT first, then Perplexity.
+- [x] 4.1 `sites/` adapters for ChatGPT and Perplexity using ONLY the selectors verified in Phase 0.
+- [x] 4.2 `preload/gates/gate-state.ts` state machine (IDLE, HELD, AWAITING, RELEASED/BLOCKED) and the bypass WeakSet.
+- [x] 4.3 `prompt-gate.ts`: Enter and send-button, IME-safe, Shift+Enter allowed.
+- [x] 4.4 `file-gate.ts`: picker, drop, paste. Replay on allow, clear input on cancel.
+- [x] 4.5 Wire preload to main via the typed bridge. Pick the adapter by hostname.
+  Done when: acceptance A1-A7 and A10 pass manually on ChatGPT first, then Perplexity. (36/36 tests passing)
 
 ## Phase 5: Response colour
 - [ ] 5.1 `response-style.ts`: insertCSS on dom-ready, `did-navigate-in-page`, `did-finish-load`. Manage the inserted CSS key.

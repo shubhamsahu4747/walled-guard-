@@ -1,13 +1,17 @@
 import { contextBridge } from 'electron';
 import { guardBridge } from './bridge';
 import { findAdapterByHostname } from '../sites/registry';
+import { initGates } from './gates';
 import { logger } from '../shared/logger';
 
-// Expose safe typed API to web tabs
+// 1. Expose safe typed bridge to web page
 contextBridge.exposeInMainWorld('walledGuard', guardBridge);
 
-// Identify site adapter
+// 2. Identify site adapter based on current location
 const adapter = findAdapterByHostname(window.location.hostname);
 if (adapter) {
-  logger.info(`Attached adapter [${adapter.name}] to ${window.location.hostname}`);
+  logger.info(`Activating Walled Guard for ${adapter.name} (${window.location.hostname})`);
+  initGates(adapter, guardBridge);
+} else {
+  logger.debug(`No matching site adapter for hostname: ${window.location.hostname}`);
 }

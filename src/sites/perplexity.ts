@@ -38,11 +38,15 @@ export function createPerplexityAdapter(): SiteAdapter {
       for (const sel of this.selectors.editor) {
         const el = root.querySelector(sel);
         if (el) {
-          if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) {
-            return el.value || '';
+          const anyEl = el as unknown as Record<string, unknown>;
+          if (typeof anyEl.value === 'string') {
+            return anyEl.value;
           }
-          if (el instanceof HTMLElement && el.isContentEditable) {
-            return el.innerText || el.textContent || '';
+          if (typeof anyEl.innerText === 'string') {
+            return anyEl.innerText;
+          }
+          if (typeof anyEl.textContent === 'string') {
+            return anyEl.textContent;
           }
         }
       }
