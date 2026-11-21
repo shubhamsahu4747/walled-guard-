@@ -53,7 +53,7 @@ export function createChatGPTAdapter(): SiteAdapter {
     },
     responseCss(color: string): string {
       return `
-        /* ChatGPT AI response text recoloring */
+        /* ChatGPT AI response text recoloring (R5.1 - R5.4) */
         [data-message-author-role="assistant"],
         div[data-testid="conversation-turn-agent"],
         .agent-turn {
@@ -61,14 +61,18 @@ export function createChatGPTAdapter(): SiteAdapter {
         }
         [data-message-author-role="assistant"] p,
         [data-message-author-role="assistant"] li,
-        [data-message-author-role="assistant"] span {
+        [data-message-author-role="assistant"] span:not([class*="token"]) {
           color: inherit !important;
         }
-        /* Exclude code, pre, links, tables to keep readability */
+        /* Exclude code blocks, syntax highlight tokens, links, and tables for complete readability (R5.4) */
         [data-message-author-role="assistant"] pre,
+        [data-message-author-role="assistant"] pre *,
         [data-message-author-role="assistant"] code,
+        [data-message-author-role="assistant"] code *,
         [data-message-author-role="assistant"] a,
-        [data-message-author-role="assistant"] table {
+        [data-message-author-role="assistant"] a *,
+        [data-message-author-role="assistant"] table,
+        [data-message-author-role="assistant"] table * {
           color: revert !important;
         }
       `;

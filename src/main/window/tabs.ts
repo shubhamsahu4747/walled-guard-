@@ -14,6 +14,7 @@ export interface TabManager {
   getActiveTab: () => TabId;
   updateBounds: () => void;
   getViews: () => Record<TabId, WebContentsView>;
+  updateResponseColor: (color: string) => Promise<void>;
 }
 
 export function createTabManager(parentWindow: BaseWindow): TabManager {
@@ -35,13 +36,13 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   chatgptView.webContents.setUserAgent(DEFAULT_USER_AGENT);
   chatgptView.webContents.loadURL('https://chatgpt.com');
 
-  // Inject CSS on load
-  chatgptView.webContents.on('did-finish-load', () => {
+  // Inject CSS on dom-ready, did-finish-load, and in-page navigation (SPA)
+  const applyChatGPTStyle = () => {
     applyResponseColor(chatgptView.webContents, getSettings().responseColor, chatgptAdapter);
-  });
-  chatgptView.webContents.on('did-navigate-in-page', () => {
-    applyResponseColor(chatgptView.webContents, getSettings().responseColor, chatgptAdapter);
-  });
+  };
+  chatgptView.webContents.on('dom-ready', applyChatGPTStyle);
+  chatgptView.webContents.on('did-finish-load', applyChatGPTStyle);
+  chatgptView.webContents.on('did-navigate-in-page', applyChatGPTStyle);
 
   // 2. Perplexity View
   const perplexityView = new WebContentsView({
@@ -56,12 +57,12 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   perplexityView.webContents.setUserAgent(DEFAULT_USER_AGENT);
   perplexityView.webContents.loadURL('https://www.perplexity.ai');
 
-  perplexityView.webContents.on('did-finish-load', () => {
+  const applyPerplexityStyle = () => {
     applyResponseColor(perplexityView.webContents, getSettings().responseColor, perplexityAdapter);
-  });
-  perplexityView.webContents.on('did-navigate-in-page', () => {
-    applyResponseColor(perplexityView.webContents, getSettings().responseColor, perplexityAdapter);
-  });
+  };
+  perplexityView.webContents.on('dom-ready', applyPerplexityStyle);
+  perplexityView.webContents.on('did-finish-load', applyPerplexityStyle);
+  perplexityView.webContents.on('did-navigate-in-page', applyPerplexityStyle);
 
   // 3. Dashboard View
   const dashboardView = new WebContentsView({
@@ -125,6 +126,13 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
     parentWindow.setTitle(`Walled Guard - ${id.charAt(0).toUpperCase() + id.slice(1)}`);
   }
 
+  async function updateResponseColor(color: string): Promise<void> {
+    await Promise.all([
+      applyResponseColor(chatgptView.webContents, color, chatgptAdapter),
+      applyResponseColor(perplexityView.webContents, color, perplexityAdapter)
+    ]);
+  }
+
   // Initial bounds and activate tab
   updateBounds();
   switchTab('chatgpt');
@@ -133,6 +141,7 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
     switchTab,
     getActiveTab: () => activeTab,
     updateBounds,
-    getViews: () => views
+    getViews: () => views,
+    updateResponseColor
   };
 }

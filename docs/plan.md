@@ -47,9 +47,9 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: acceptance A1-A7 and A10 pass manually on ChatGPT first, then Perplexity. (36/36 tests passing)
 
 ## Phase 5: Response colour
-- [ ] 5.1 `response-style.ts`: insertCSS on dom-ready, `did-navigate-in-page`, `did-finish-load`. Manage the inserted CSS key.
-- [ ] 5.2 Per-site `responseCss(color)` with `!important`, readable code and link handling.
-  Done when: A8 and A9 pass including streamed and history responses, and the colour survives SPA navigation.
+- [x] 5.1 `response-style.ts`: insertCSS on dom-ready, `did-navigate-in-page`, `did-finish-load`. Manage the inserted CSS key.
+- [x] 5.2 Per-site `responseCss(color)` with `!important`, readable code and link handling.
+  Done when: A8 and A9 pass including streamed and history responses, and the colour survives SPA navigation. (39/39 tests passing)
 
 ## Phase 6: Dashboard and analytics [SHOULD]
 - [ ] 6.1 Store: PostgreSQL via Drizzle ORM. Define `schema.ts`, `drizzle.config.ts`, generate migrations and run them on startup. Implement the `EventsRepo` interface with `PgEventsRepo` and `MemoryEventsRepo` (auto-fallback when the DB is down or `DATABASE_URL` is unset), a bounded write-behind queue with retry, retention purge, and `docker-compose.yml` plus `.env.example`.

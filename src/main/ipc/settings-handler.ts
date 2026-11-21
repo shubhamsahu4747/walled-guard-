@@ -16,8 +16,19 @@ let currentSettings: AppSettings = {
   retentionDays: 90
 };
 
+type SettingsChangeListener = (settings: AppSettings) => void;
+const listeners: SettingsChangeListener[] = [];
+
 export function getSettings(): AppSettings {
   return { ...currentSettings };
+}
+
+export function onSettingsChange(fn: SettingsChangeListener): () => void {
+  listeners.push(fn);
+  return () => {
+    const idx = listeners.indexOf(fn);
+    if (idx !== -1) listeners.splice(idx, 1);
+  };
 }
 
 export function registerSettingsHandler(): void {
@@ -29,6 +40,7 @@ export function registerSettingsHandler(): void {
     IPC_CHANNELS.SETTINGS_SET,
     async (_event, newSettings: Partial<AppSettings>): Promise<boolean> => {
       currentSettings = { ...currentSettings, ...newSettings };
+      listeners.forEach((fn) => fn(currentSettings));
       return true;
     }
   );
