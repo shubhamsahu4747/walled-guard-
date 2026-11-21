@@ -54,7 +54,7 @@ function configureTabSecurity(view: WebContentsView): void {
 }
 
 export function createTabManager(parentWindow: BaseWindow): TabManager {
-  let activeTab: TabId = 'chatgpt';
+  let activeTab: TabId = 'dashboard';
 
   const webPreload = path.join(__dirname, '../preload/web.js');
   const dashboardPreload = path.join(__dirname, '../preload/dashboard.js');
@@ -202,7 +202,7 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
 
   // Initial bounds and activate tab
   updateBounds();
-  switchTab('chatgpt');
+  switchTab('dashboard');
 
   return {
     switchTab,
