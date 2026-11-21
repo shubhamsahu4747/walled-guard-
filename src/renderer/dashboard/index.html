@@ -3,25 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 32px;
-      background: #ffffff;
-      color: #0f172a;
-    }
-    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    p { color: #64748b; font-size: 14px; }
-  </style>
+  <title>Walled Guard - Dashboard</title>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <h1>Dashboard</h1>
-  <p id="status-line">Nov 1 to Nov 21, 2026 · local data only · <span style="color: #10b981;">● Postgres connected</span></p>
-  <div id="dashboard-root">
-    <p>Loading analytics data...</p>
-  </div>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="title-group">
+      <h1>Dashboard</h1>
+      <div class="subtitle">
+        <span id="date-range-label">Last 30 days</span> · local data only ·
+        <span class="db-indicator">
+          <span class="db-dot connected" id="db-dot"></span>
+          <span id="db-status-text">Postgres connected</span>
+        </span>
+      </div>
+    </div>
+    <div class="controls-group">
+      <div class="pills">
+        <button class="pill-btn" data-range="today">Today</button>
+        <button class="pill-btn" data-range="7d">7d</button>
+        <button class="pill-btn active" data-range="30d">30d</button>
+        <button class="pill-btn" data-range="all">All</button>
+      </div>
+      <button class="btn-export" id="btn-header-export-csv">Export CSV</button>
+    </div>
+  </header>
+
+  <!-- 6 KPI Cards -->
+  <section class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">Prompts inspected</div>
+      <div class="kpi-value" id="kpi-total-prompts">0</div>
+      <div class="kpi-diff positive" id="kpi-diff-prompts">+12% vs prev. 30d</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">File uploads</div>
+      <div class="kpi-value" id="kpi-total-files">0</div>
+      <div class="kpi-diff positive" id="kpi-diff-files">+4% vs prev. 30d</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Sensitive detections</div>
+      <div class="kpi-value" id="kpi-detections">0</div>
+      <div class="kpi-diff negative" id="kpi-diff-detections">+9 vs prev. 30d</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Leak rate</div>
+      <div class="kpi-value" id="kpi-leak-rate">0.0%</div>
+      <div class="kpi-diff negative" id="kpi-diff-leak">+0.2 pts of all inspected</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Blocked (Cancel)</div>
+      <div class="kpi-value" id="kpi-blocked">0</div>
+      <div class="kpi-diff" id="kpi-blocked-sub">0% of detections</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Overridden (Continue)</div>
+      <div class="kpi-value" id="kpi-overridden">0</div>
+      <div class="kpi-diff" id="kpi-override-sub">0% override rate</div>
+    </div>
+  </section>
+
+  <!-- Activity Bar & Risk Gauge -->
+  <section class="grid-2col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Activity per day</div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background: #38bdf8;"></span> Clean</div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ef4444;"></span> Sensitive</div>
+        </div>
+      </div>
+      <div style="height: 240px; position: relative;">
+        <canvas id="activity-chart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Risk score</div>
+        <div class="risk-badge Low" id="risk-badge">Low</div>
+      </div>
+      <div class="risk-score-wrapper">
+        <span class="risk-number" id="risk-number">0</span>
+        <span class="risk-max">/ 100</span>
+      </div>
+      <div class="risk-bar">
+        <div class="risk-marker" id="risk-marker" style="left: 0%;"></div>
+      </div>
+
+      <div class="risk-breakdown-row">
+        <span class="risk-component-name">Leak rate</span>
+        <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-bar-leak" style="width: 0%;"></div></div>
+        <span class="risk-component-val" id="risk-val-leak">0</span>
+      </div>
+      <div class="risk-breakdown-row">
+        <span class="risk-component-name">Override rate</span>
+        <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-bar-override" style="width: 0%;"></div></div>
+        <span class="risk-component-val" id="risk-val-override">0</span>
+      </div>
+      <div class="risk-breakdown-row">
+        <span class="risk-component-name">Repeat content</span>
+        <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-bar-repeat" style="width: 0%;"></div></div>
+        <span class="risk-component-val" id="risk-val-repeat">0</span>
+      </div>
+      <div class="risk-breakdown-row">
+        <span class="risk-component-name">File share</span>
+        <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-bar-file" style="width: 0%;"></div></div>
+        <span class="risk-component-val" id="risk-val-file">0</span>
+      </div>
+      <div class="formula-footnote">
+        100 x (0.40 leak rate + 0.35 override rate + 0.15 repeats + 0.10 file share)
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Breakdown Cards -->
+  <section class="grid-4col">
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 16px;">Detections by site</div>
+      <div id="breakdown-site-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 16px;">Detections by content type</div>
+      <div id="breakdown-type-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 8px;">What users decided</div>
+      <div style="height: 160px; position: relative;">
+        <canvas id="decision-donut-chart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 16px;">How it was found</div>
+      <div id="breakdown-source-list"></div>
+    </div>
+  </section>
+
+  <!-- Insights & Heatmap -->
+  <section class="grid-2col">
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 16px;">Insights</div>
+      <div id="insights-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">When sensitive content shows up</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Peak: weekdays around 15:00</div>
+      </div>
+      <div class="heatmap-container" id="heatmap-grid"></div>
+    </div>
+  </section>
+
+  <!-- Recent Events Table -->
+  <section class="card" style="margin-top: 24px;">
+    <div class="card-title" style="margin-bottom: 16px;">Recent events</div>
+    <div class="events-table-controls">
+      <select class="table-select" id="filter-site">
+        <option value="">All sites</option>
+        <option value="chatgpt">ChatGPT</option>
+        <option value="perplexity">Perplexity</option>
+      </select>
+      <select class="table-select" id="filter-kind">
+        <option value="">Prompts and files</option>
+        <option value="prompt">Prompts only</option>
+        <option value="file">Files only</option>
+      </select>
+      <select class="table-select" id="filter-decision">
+        <option value="">All decisions</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="continued">Continued</option>
+        <option value="clean">Clean</option>
+        <option value="scan_failed">Scan failed</option>
+      </select>
+      <input type="text" class="table-search" id="filter-search" placeholder="Search file name or hash">
+    </div>
+
+    <div class="table-wrapper">
+      <table class="events-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Site</th>
+            <th>Type</th>
+            <th>Item</th>
+            <th>Found via</th>
+            <th>Decision</th>
+            <th>Scan time</th>
+          </tr>
+        </thead>
+        <tbody id="events-tbody">
+          <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading events...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span>Only hashes and metadata are stored. Prompt text and file contents are never saved.</span>
+      <div class="table-actions">
+        <a id="btn-export-json">Export JSON</a>
+        <a class="danger" id="btn-clear-data">Clear all data</a>
+      </div>
+    </div>
+  </section>
+
   <script src="./main.ts" type="module"></script>
 </body>
 </html>

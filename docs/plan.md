@@ -52,15 +52,15 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: A8 and A9 pass including streamed and history responses, and the colour survives SPA navigation. (39/39 tests passing)
 
 ## Phase 6: Dashboard and analytics [SHOULD]
-- [ ] 6.1 Store: PostgreSQL via Drizzle ORM. Define `schema.ts`, `drizzle.config.ts`, generate migrations and run them on startup. Implement the `EventsRepo` interface with `PgEventsRepo` and `MemoryEventsRepo` (auto-fallback when the DB is down or `DATABASE_URL` is unset), a bounded write-behind queue with retry, retention purge, and `docker-compose.yml` plus `.env.example`.
+- [x] 6.1 Store: PostgreSQL via Drizzle ORM. Define `schema.ts`, `drizzle.config.ts`, generate migrations and run them on startup. Implement the `EventsRepo` interface with `PgEventsRepo` and `MemoryEventsRepo` (auto-fallback when the DB is down or `DATABASE_URL` is unset), a bounded write-behind queue with retry, retention purge, and `docker-compose.yml` plus `.env.example`.
   Done when: events persist across restarts with Postgres up. With Postgres stopped, the guard and dialog still work and the dashboard shows the "not connected" banner.
-- [ ] 6.2 Hook the guard handler to log every inspected action (clean ones too), hash only.
-- [ ] 6.3 Analytics service: kpis, timeSeries, heatmap, breakdowns, repeatOffenders, risk-score, insights. Unit tests with seeded data.
-- [ ] 6.4 Analytics IPC handlers (read-only), dashboard preload and schema validation.
-- [ ] 6.5 Dashboard UI: KPI cards, time series, site and file-type breakdowns, decision donut, heatmap, events table with filters and range selector, risk gauge, insights panel. Chart.js bundled locally and CSP strict.
-- [ ] 6.6 Data controls: CSV/JSON export, clear data with confirmation, retention setting.
-- [ ] 6.7 `scripts/seed-demo-data.ts` to generate about 300 realistic events so the demo dashboard looks populated.
-  Done when: the dashboard updates live after a real detection and all widgets render with seeded data.
+- [x] 6.2 Hook the guard handler to log every inspected action (clean ones too), hash only.
+- [x] 6.3 Analytics service: kpis, timeSeries, heatmap, breakdowns, repeatOffenders, risk-score, insights. Unit tests with seeded data.
+- [x] 6.4 Analytics IPC handlers (read-only), dashboard preload and schema validation.
+- [x] 6.5 Dashboard UI: KPI cards, time series, site and file-type breakdowns, decision donut, heatmap, events table with filters and range selector, risk gauge, insights panel. Chart.js bundled locally and CSP strict.
+- [x] 6.6 Data controls: CSV/JSON export, clear data with confirmation, retention setting.
+- [x] 6.7 `scripts/seed-demo-data.ts` to generate about 300 realistic events so the demo dashboard looks populated.
+  Done when: the dashboard updates live after a real detection and all widgets render with seeded data. (44/44 tests passing)
 
 ## Phase 7: Network safety net and hardening
 - [ ] 7.1 `upload-guard.ts` with decision cache plus single-flight (no double dialogs). [SHOULD]

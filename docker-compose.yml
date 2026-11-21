@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: walled-guard-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: walled
+      POSTGRES_PASSWORD: walled_password
+      POSTGRES_DB: walled_guard
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
