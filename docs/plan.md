@@ -16,10 +16,10 @@ Legend: [ ] todo. Each task lists its Done-when check.
 - [x] **Decision gate**: if a site blocks embedded Chromium entirely, stop and report to the user before continuing. Passed: both sites load without challenge.
 
 ## Phase 1: Project foundation
-- [ ] 1.1 Initialise repo with the structure in architecture.md section 10 (empty files with TODO headers are fine).
-- [ ] 1.2 Configure TypeScript strict, ESLint, Prettier, Vitest, electron-vite, electron-builder.
-- [ ] 1.3 `src/shared`: constants (MARKER, limits), types, IPC channel names, payload validators, logger.
-  Done when: `npm run dev` opens the shell, `npm run lint` and `npm run typecheck` pass.
+- [x] 1.1 Initialise repo with the structure in architecture.md section 10 (empty files with TODO headers are fine).
+- [x] 1.2 Configure TypeScript strict, ESLint, Prettier, Vitest, electron-vite, electron-builder.
+- [x] 1.3 `src/shared`: constants (MARKER, limits), types, IPC channel names, payload validators, logger.
+  Done when: `npm run dev` opens the shell, `npm run lint` and `npm run typecheck` pass. (All passing)
 
 ## Phase 2: Scanner core (pure logic, fully unit-tested)
 - [ ] 2.1 `normalize.ts` plus tests (case, NFKC, zero-width).

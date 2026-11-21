@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walled Guard - Shell</title>
+  <style>
+    :root {
+      --bg-sidebar: #f8fafc;
+      --border-color: #e2e8f0;
+      --text-primary: #1e293b;
+      --text-muted: #64748b;
+      --accent: #0f172a;
+      --accent-active: #0ea5e9;
+      --active-bg: #e2e8f0;
+      --green: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-sidebar);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-color);
+      user-select: none;
+    }
+    .brand {
+      padding: 20px 16px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .brand svg { width: 20px; height: 20px; color: var(--green); }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      padding: 16px 16px 8px;
+    }
+    .nav-list { list-style: none; padding: 0 8px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: background 0.15s ease;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: #f1f5f9; }
+    .nav-item.active { background: var(--active-bg); font-weight: 600; }
+    .nav-label { display: flex; align-items: center; gap: 10px; }
+    .nav-label svg { width: 18px; height: 18px; opacity: 0.8; }
+    .badge {
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 2px 7px;
+    }
+    .footer {
+      margin-top: auto;
+      padding: 16px;
+    }
+    .status-card {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+    }
+    .status-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
+    .status-desc { color: var(--text-muted); font-size: 11px; line-height: 1.4; }
+    .db-status { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    Walled Guard
+  </div>
+
+  <div class="section-title">WORKSPACE</div>
+  <ul class="nav-list" id="workspace-nav">
+    <li class="nav-item active" data-tab="chatgpt">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        ChatGPT
+      </div>
+    </li>
+    <li class="nav-item" data-tab="perplexity">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+        </svg>
+        Perplexity
+      </div>
+    </li>
+    <li class="nav-item" data-tab="dashboard">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </div>
+      <span class="badge" id="badge-count">3</span>
+    </li>
+    <li class="nav-item" data-tab="settings">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
+        Settings
+      </div>
+    </li>
+  </ul>
+
+  <div class="section-title">QUICK ACTIONS</div>
+  <ul class="nav-list">
+    <li class="nav-item" id="btn-scan-file">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><circle cx="11" cy="14" r="3"/><line x1="13.5" y1="16.5" x2="16" y2="19"/>
+        </svg>
+        Scan a file
+      </div>
+    </li>
+    <li class="nav-item" id="btn-export-csv">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export CSV
+      </div>
+    </li>
+    <li class="nav-item" id="btn-clear-data" style="color: #ef4444;">
+      <div class="nav-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Clear data
+      </div>
+    </li>
+  </ul>
+
+  <div class="footer">
+    <div class="status-card">
+      <div class="status-header">
+        <span class="dot"></span> Guard active
+      </div>
+      <div class="status-desc">ChatGPT and Perplexity are protected</div>
+      <div class="db-status">Postgres connected</div>
+    </div>
+  </div>
+
+  <script src="./tabs.ts" type="module"></script>
+</body>
+</html>
