@@ -43,7 +43,13 @@ export function createMainWindow(): AppWindow {
   updateSidebarBounds();
   win.contentView.addChildView(sidebarView);
 
-  const tabManager = createTabManager(win);
+  const tabManager = createTabManager(win, (tab) => {
+    try {
+      sidebarView.webContents.send('tab-switched', tab);
+    } catch {
+      // ignore
+    }
+  });
 
   win.on('resize', () => {
     updateSidebarBounds();

@@ -7,7 +7,7 @@ import { perplexityAdapter } from '../../sites/perplexity';
 import { getSettings } from '../ipc/settings-handler';
 import { logger } from '../../shared/logger';
 
-export type TabId = 'chatgpt' | 'perplexity' | 'dashboard' | 'settings';
+export type TabId = 'dashboard' | 'chatgpt' | 'perplexity' | 'logs' | 'settings';
 
 export interface TabManager {
   switchTab: (id: TabId) => void;
@@ -53,7 +53,7 @@ function configureTabSecurity(view: WebContentsView): void {
   });
 }
 
-export function createTabManager(parentWindow: BaseWindow): TabManager {
+export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: TabId) => void): TabManager {
   let activeTab: TabId = 'dashboard';
 
   const webPreload = path.join(__dirname, '../preload/web.js');
@@ -118,7 +118,23 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   const dashboardHtml = path.join(__dirname, '../renderer/dashboard/index.html');
   dashboardView.webContents.loadFile(dashboardHtml);
 
-  // 4. Settings View
+  // 4. Logs View
+  const logsView = new WebContentsView({
+    webPreferences: {
+      contextIsolation: true,
+      sandbox: false,
+      webSecurity: false,
+      nodeIntegration: false,
+      preload: dashboardPreload
+    }
+  });
+  logsView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[Logs Console] ${msg}`);
+  });
+  const logsHtml = path.join(__dirname, '../renderer/logs/index.html');
+  logsView.webContents.loadFile(logsHtml);
+
+  // 5. Settings View
   const settingsView = new WebContentsView({
     webPreferences: {
       contextIsolation: true,
@@ -135,9 +151,10 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   settingsView.webContents.loadFile(settingsHtml);
 
   const views: Record<TabId, WebContentsView> = {
+    dashboard: dashboardView,
     chatgpt: chatgptView,
     perplexity: perplexityView,
-    dashboard: dashboardView,
+    logs: logsView,
     settings: settingsView
   };
 
@@ -190,7 +207,22 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
       }
     });
 
-    parentWindow.setTitle(`Walled Guard - ${id.charAt(0).toUpperCase() + id.slice(1)}`);
+    const titleMap: Record<TabId, string> = {
+      dashboard: 'Dashboard',
+      chatgpt: 'ChatGPT',
+      perplexity: 'Perplexity',
+      logs: 'Security Audit Log',
+      settings: 'Settings'
+    };
+    parentWindow.setTitle(`Walled Guard - ${titleMap[id] || id}`);
+
+    if (onTabChange) {
+      try {
+        onTabChange(id);
+      } catch (err) {
+        logger.warn('Error in onTabChange callback:', err);
+      }
+    }
   }
 
   async function updateResponseColor(color: string): Promise<void> {

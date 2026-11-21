@@ -255,7 +255,7 @@ async function loadEvents(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     decision: decisionFilter ? (decisionFilter as any) : undefined,
     search: searchQuery ? searchQuery : undefined,
-    limit: 20
+    limit: 8
   };
 
   const page = await win.dashboardApi.getEvents(query);
@@ -322,6 +322,13 @@ function initEventHandlers(): void {
   document.getElementById('filter-search')?.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => loadEvents(), 250);
+  });
+
+  // View all events button -> navigate to dedicated logs tab
+  document.getElementById('btn-view-all-events')?.addEventListener('click', () => {
+    if (win.dashboardApi && typeof win.dashboardApi.navigateTab === 'function') {
+      win.dashboardApi.navigateTab('logs');
+    }
   });
 
   // Export CSV

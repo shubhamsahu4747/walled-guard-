@@ -51,6 +51,7 @@ export default defineConfig({
         input: {
           shell: path.resolve(__dirname, 'src/renderer/shell/index.html'),
           dashboard: path.resolve(__dirname, 'src/renderer/dashboard/index.html'),
+          logs: path.resolve(__dirname, 'src/renderer/logs/index.html'),
           settings: path.resolve(__dirname, 'src/renderer/settings/index.html')
         }
       }

@@ -155,9 +155,17 @@
     </div>
   </section>
 
-  <!-- Recent Events Table -->
+  <!-- Recent Events Table (Summary: 8 latest records) -->
   <section class="card" style="margin-top: 24px;">
-    <div class="card-title" style="margin-bottom: 16px;">Recent events</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div>
+        <div class="card-title">Recent Events</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">Showing latest 8 records · Local audit ledger</div>
+      </div>
+      <button id="btn-view-all-events" class="btn-view-all" style="background: #0ea5e9; color: #ffffff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s ease;">
+        View all logs &rarr;
+      </button>
+    </div>
     <div class="events-table-controls">
       <select class="table-select" id="filter-site">
         <option value="">All sites</option>

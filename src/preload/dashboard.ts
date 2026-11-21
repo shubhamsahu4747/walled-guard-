@@ -24,6 +24,7 @@ export interface DashboardAPI {
   setSettings: (settings: Partial<AppSettings>) => Promise<boolean>;
   getAppStatus: () => Promise<{ dbStatus: 'up' | 'down'; guardActive: boolean }>;
   navigateTab: (tab: string) => void;
+  onTabSwitched: (cb: (tab: string) => void) => void;
   triggerDebugDialog: (variant: 'prompt' | 'file' | 'failed') => Promise<unknown>;
 }
 
@@ -41,6 +42,9 @@ export const dashboardApi: DashboardAPI = {
   setSettings: (settings: Partial<AppSettings>) => ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET, settings),
   getAppStatus: () => ipcRenderer.invoke(IPC_CHANNELS.APP_STATUS),
   navigateTab: (tab: string) => ipcRenderer.send(IPC_CHANNELS.NAVIGATE_TAB, tab),
+  onTabSwitched: (cb: (tab: string) => void) => {
+    ipcRenderer.on('tab-switched', (_event, tab) => cb(tab));
+  },
   triggerDebugDialog: (variant: 'prompt' | 'file' | 'failed') =>
     ipcRenderer.invoke(IPC_CHANNELS.GUARD_DEBUG_DIALOG, variant)
 };
