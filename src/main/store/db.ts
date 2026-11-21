@@ -51,7 +51,7 @@ export function getEventsRepo(): EventsRepo {
   if (!memoryFallbackRepo) {
     initStore();
   }
-  if (primaryRepo && isPgUp) {
+  if (primaryRepo && (isPgUp || process.env.DATABASE_URL)) {
     return primaryRepo;
   }
   return memoryFallbackRepo!;
@@ -65,6 +65,9 @@ export function logEvent(event: NewEvent): void {
 }
 
 export async function checkDbHealth(): Promise<'up' | 'down'> {
+  if (!primaryRepo && !memoryFallbackRepo) {
+    initStore();
+  }
   if (primaryRepo) {
     const status = await primaryRepo.health();
     isPgUp = status === 'up';

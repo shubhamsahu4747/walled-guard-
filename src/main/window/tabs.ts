@@ -133,31 +133,51 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
     settings: settingsView
   };
 
-  function updateBounds(): void {
-    const [width, height] = parentWindow.getSize();
+  function getTabBounds(): { x: number; y: number; width: number; height: number } {
+    const [width, height] = parentWindow.getContentSize();
     const sidebarWidth = 240;
-    const bounds = { x: sidebarWidth, y: 0, width: Math.max(0, width - sidebarWidth), height };
+    return {
+      x: sidebarWidth,
+      y: 0,
+      width: Math.max(0, width - sidebarWidth),
+      height
+    };
+  }
 
-    Object.values(views).forEach((v) => {
-      v.setBounds(bounds);
-    });
+  function updateBounds(): void {
+    const bounds = getTabBounds();
+    const currentView = views[activeTab];
+    if (currentView) {
+      currentView.setBounds(bounds);
+    }
   }
 
   function switchTab(id: TabId): void {
     logger.info(`Switching active tab to: ${id}`);
     activeTab = id;
+    const bounds = getTabBounds();
 
-    // Hide all
     Object.entries(views).forEach(([tabKey, v]) => {
       if (tabKey === id) {
         v.setVisible(true);
+        v.setBounds(bounds);
         try {
-          parentWindow.contentView.addChildView(v);
+          if (!parentWindow.contentView.children.includes(v)) {
+            parentWindow.contentView.addChildView(v);
+          }
         } catch {
-          // view already added
+          // view already attached
         }
       } else {
         v.setVisible(false);
+        v.setBounds({ x: 0, y: 0, width: 0, height: 0 });
+        try {
+          if (parentWindow.contentView.children.includes(v)) {
+            parentWindow.contentView.removeChildView(v);
+          }
+        } catch {
+          // ignore
+        }
       }
     });
 

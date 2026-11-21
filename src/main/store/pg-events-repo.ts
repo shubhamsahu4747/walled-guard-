@@ -14,11 +14,46 @@ import { calculateRiskScore } from '../analytics/risk-score';
 import { generateInsights } from '../analytics/insights';
 import { logger } from '../../shared/logger';
 
+export async function ensurePgSchema(pool: Pool): Promise<void> {
+  try {
+    const client = await pool.connect();
+    try {
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS events (
+          id BIGSERIAL PRIMARY KEY,
+          ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          site TEXT NOT NULL,
+          kind TEXT NOT NULL,
+          file_type TEXT,
+          file_name TEXT,
+          size_bytes INTEGER,
+          detected BOOLEAN NOT NULL,
+          detection_source TEXT,
+          decision TEXT NOT NULL,
+          scan_ms INTEGER,
+          content_hash TEXT NOT NULL,
+          snippet TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts);
+        CREATE INDEX IF NOT EXISTS idx_events_hash ON events (content_hash);
+        CREATE INDEX IF NOT EXISTS idx_events_site_kind ON events (site, kind);
+      `);
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    logger.warn('Postgres schema check/creation failed:', err);
+  }
+}
+
 export function createPgEventsRepo(connectionString: string): EventsRepo {
   const pool = new Pool({
     connectionString,
     connectionTimeoutMillis: 3000
   });
+
+  // Auto-verify and create table schema if missing
+  ensurePgSchema(pool);
 
   const db: NodePgDatabase = drizzle(pool);
 

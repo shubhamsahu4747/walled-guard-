@@ -31,7 +31,7 @@ export function createMainWindow(): AppWindow {
   sidebarView.webContents.loadFile(shellHtml);
 
   function updateSidebarBounds(): void {
-    const [, height] = win.getSize();
+    const [, height] = win.getContentSize();
     sidebarView.setBounds({ x: 0, y: 0, width: 240, height });
   }
 
