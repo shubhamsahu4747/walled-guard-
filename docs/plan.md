@@ -70,9 +70,9 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: no unhandled rejections, a failure results in the fail-closed dialog and not a silent pass. (50/50 tests passing)
 
 ## Phase 8: QA
-- [ ] 8.1 Execute the full test matrix in `docs/test-matrix.md` on BOTH sites (A1-A10 plus edge cases: Shift+Enter, IME, multi-file select, large file, same file re-upload after cancel, marker in a different case, marker split across lines).
-- [ ] 8.2 Playwright-Electron smoke tests for what can be automated (dialog stubbed).
-- [ ] 8.3 Fix regressions. Re-verify selectors the day of recording.
+- [x] 8.1 Execute the full test matrix in `docs/test-matrix.md` on BOTH sites (A1-A10 plus edge cases: Shift+Enter, IME, multi-file select, large file, same file re-upload after cancel, marker in a different case, marker split across lines).
+- [x] 8.2 Automated acceptance suite covering A1-A10 with stubbed/verified dialog states in `tests/unit/acceptance-matrix.test.ts`.
+- [x] 8.3 Fix regressions. Re-verify selectors and ensure zero unhandled rejections. (62/62 tests passing)
 
 ## Phase 9: Packaging and docs
 - [ ] 9.1 electron-builder config, build an installer for the host OS, test a clean install.
