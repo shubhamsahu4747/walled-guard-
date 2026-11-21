@@ -13,14 +13,27 @@ async function getWorker(): Promise<Worker> {
     return cachedWorker;
   }
 
-  // Check if offline traineddata exists in resources/tessdata
-  const tessdataPath = path.resolve(process.cwd(), 'resources/tessdata');
-  const hasLocalTessdata = fs.existsSync(path.join(tessdataPath, 'eng.traineddata'));
+  // Check if offline traineddata exists in resources/tessdata (packaged or dev)
+  const proc = process as unknown as { resourcesPath?: string };
+  const resPath = proc.resourcesPath || '';
+  const candidatePaths = [
+    path.resolve(process.cwd(), 'resources/tessdata'),
+    path.join(resPath, 'resources/tessdata'),
+    path.join(resPath, 'tessdata')
+  ];
+
+  let resolvedPath: string | null = null;
+  for (const p of candidatePaths) {
+    if (p && fs.existsSync(path.join(p, 'eng.traineddata'))) {
+      resolvedPath = p;
+      break;
+    }
+  }
 
   const options: Record<string, unknown> = {};
-  if (hasLocalTessdata) {
-    options.langPath = tessdataPath;
-    options.cachePath = tessdataPath;
+  if (resolvedPath) {
+    options.langPath = resolvedPath;
+    options.cachePath = resolvedPath;
     options.gzip = false;
   }
 

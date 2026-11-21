@@ -1,0 +1,30 @@
+appId: com.walledguard.desktop
+productName: Walled Guard
+directories:
+  output: dist
+  buildResources: resources
+
+files:
+  - out/**
+  - resources/**
+  - package.json
+
+extraResources:
+  - from: resources/tessdata
+    to: resources/tessdata
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Walled Guard
+  artifactName: "${productName}-Setup-${version}.${ext}"

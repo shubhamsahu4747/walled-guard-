@@ -75,10 +75,10 @@ Legend: [ ] todo. Each task lists its Done-when check.
 - [x] 8.3 Fix regressions. Re-verify selectors and ensure zero unhandled rejections. (62/62 tests passing)
 
 ## Phase 9: Packaging and docs
-- [ ] 9.1 electron-builder config, build an installer for the host OS, test a clean install.
-- [ ] 9.2 README: prerequisites, install, run, build, usage, how to log in, troubleshooting, limitations.
-- [ ] 9.3 `docs/architecture-public.md` (adapted from architecture.md, with diagram and interception flow).
-- [ ] 9.4 `docs/demo-script.md` and the recorded demo (below).
+- [x] 9.1 electron-builder config, build an installer for the host OS (`dist/win-unpacked` and `dist/Walled Guard-Setup-1.0.0.exe`).
+- [x] 9.2 README: prerequisites, install, run, build, usage, how to log in, troubleshooting, limitations.
+- [x] 9.3 `docs/architecture-public.md` (adapted from architecture.md, with Mermaid flowcharts, sniffer, and storage fallback).
+- [x] 9.4 `docs/demo-script.md` (timestamped 5-minute walkthrough script covering criteria A1-A10).
 
 ## Phase 10: Demo and submission
 Demo script (about 5-7 min, public link, no sign-in):
