@@ -258,6 +258,18 @@ function initEventHandlers(): void {
   // Periodic poll status & refresh
   setInterval(loadStatus, 5000);
   setInterval(loadEvents, 10000);
+
+  // Entrance animation on tab switch
+  if (win.dashboardApi?.onTabSwitched) {
+    win.dashboardApi.onTabSwitched((tab: string) => {
+      if (tab === 'logs') {
+        document.body.classList.remove('tab-enter-anim');
+        void document.body.offsetWidth; // trigger reflow
+        document.body.classList.add('tab-enter-anim');
+        loadEvents();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -207,6 +207,11 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
         } catch {
           // view already attached
         }
+        try {
+          v.webContents.send('tab-switched', id);
+        } catch {
+          // ignore
+        }
       } else {
         v.setVisible(false);
         v.setBounds({ x: 0, y: 0, width: 0, height: 0 });

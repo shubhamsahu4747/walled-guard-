@@ -215,6 +215,18 @@ function initHandlers(): void {
       alert('Stored events have been cleared.');
     }
   });
+
+  // Entrance animation on tab switch
+  if (win.dashboardApi?.onTabSwitched) {
+    win.dashboardApi.onTabSwitched((tab: string) => {
+      if (tab === 'settings') {
+        document.body.classList.remove('tab-enter-anim');
+        void document.body.offsetWidth; // trigger reflow
+        document.body.classList.add('tab-enter-anim');
+        loadSettings();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

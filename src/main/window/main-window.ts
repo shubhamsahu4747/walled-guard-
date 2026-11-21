@@ -45,6 +45,8 @@ export function createMainWindow(): AppWindow {
   let isSidebarCollapsed = false;
   const EXPANDED_WIDTH = 240;
   const COLLAPSED_WIDTH = 64;
+  let currentSidebarWidth = EXPANDED_WIDTH;
+  let animTimer: NodeJS.Timeout | null = null;
 
   function getSidebarWidth(): number {
     return isSidebarCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
@@ -70,8 +72,7 @@ export function createMainWindow(): AppWindow {
 
   function updateSidebarBounds(): void {
     const [, height] = win.getContentSize();
-    const width = getSidebarWidth();
-    sidebarView.setBounds({ x: 0, y: 0, width, height });
+    sidebarView.setBounds({ x: 0, y: 0, width: currentSidebarWidth, height });
   }
 
   updateSidebarBounds();
@@ -85,23 +86,61 @@ export function createMainWindow(): AppWindow {
     }
   });
 
+  function animateSidebarTransition(targetWidth: number): void {
+    if (animTimer) {
+      clearInterval(animTimer);
+      animTimer = null;
+    }
+
+    const startWidth = currentSidebarWidth;
+    const startTime = Date.now();
+    const duration = 120; // 120ms snappy fluid animation
+
+    animTimer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      // Ease-out cubic: 1 - Math.pow(1 - progress, 3)
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const w = Math.round(startWidth + (targetWidth - startWidth) * ease);
+      currentSidebarWidth = w;
+
+      const [, height] = win.getContentSize();
+      sidebarView.setBounds({ x: 0, y: 0, width: w, height });
+      tabManager.setSidebarWidth(w);
+
+      if (progress >= 1) {
+        if (animTimer) {
+          clearInterval(animTimer);
+          animTimer = null;
+        }
+        currentSidebarWidth = targetWidth;
+        sidebarView.setBounds({ x: 0, y: 0, width: targetWidth, height });
+        tabManager.setSidebarWidth(targetWidth);
+      }
+    }, 16);
+  }
+
   function toggleSidebar(): boolean {
     isSidebarCollapsed = !isSidebarCollapsed;
     const newWidth = getSidebarWidth();
-    updateSidebarBounds();
-    tabManager.setSidebarWidth(newWidth);
     try {
       sidebarView.webContents.send('sidebar-toggled', isSidebarCollapsed);
     } catch {
       // ignore
     }
+    animateSidebarTransition(newWidth);
     logger.info(`Sidebar toggled. Collapsed: ${isSidebarCollapsed}, width: ${newWidth}px`);
     return isSidebarCollapsed;
   }
 
   win.on('resize', () => {
+    if (animTimer) {
+      clearInterval(animTimer);
+      animTimer = null;
+    }
+    currentSidebarWidth = getSidebarWidth();
     updateSidebarBounds();
-    tabManager.updateBounds();
+    tabManager.setSidebarWidth(currentSidebarWidth);
   });
 
   logger.info('Main window created successfully');

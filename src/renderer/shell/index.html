@@ -33,7 +33,7 @@
       user-select: none;
       overflow-x: hidden;
       overflow-y: auto;
-      transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* Scrollbar */
@@ -43,13 +43,15 @@
 
     /* Header & Brand */
     .sidebar-header {
-      padding: 16px 14px 14px;
+      padding: 14px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(226, 232, 240, 0.7);
       background: #ffffff;
       min-height: 56px;
+      position: relative;
+      transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .brand-group {
@@ -58,6 +60,7 @@
       gap: 10px;
       min-width: 0;
       text-decoration: none;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .brand-icon-wrapper {
@@ -71,6 +74,11 @@
       color: #ffffff;
       box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
       flex-shrink: 0;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .brand-group:hover .brand-icon-wrapper {
+      transform: scale(1.06) rotate(-2deg);
     }
 
     .brand-icon-wrapper svg {
@@ -84,6 +92,9 @@
       min-width: 0;
       white-space: nowrap;
       overflow: hidden;
+      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: left center;
     }
 
     .brand-title {
@@ -104,6 +115,7 @@
       padding: 1px 5px;
       border-radius: 4px;
       letter-spacing: 0.04em;
+      transition: transform 0.2s ease;
     }
 
     .brand-subtitle {
@@ -112,37 +124,86 @@
       font-weight: 500;
     }
 
-    /* Toggle Button (Hide / Unhide) */
+    /* =========================================================================
+       HIDE / UNHIDE TOGGLE BUTTON ANIMATION
+       ========================================================================= */
     .toggle-btn {
-      width: 30px;
-      height: 30px;
+      position: relative;
+      width: 32px;
+      height: 32px;
       border: 1px solid var(--border-color);
       background: #ffffff;
-      border-radius: 6px;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-muted);
       cursor: pointer;
-      transition: all 0.15s ease;
       flex-shrink: 0;
       outline: none;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
     .toggle-btn:hover {
       background: var(--hover-bg);
       color: var(--text-primary);
       border-color: #cbd5e1;
-      transform: scale(1.04);
+      transform: scale(1.08);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
-    .toggle-btn svg {
-      width: 16px;
-      height: 16px;
+    .toggle-btn:active {
+      transform: scale(0.88) !important;
+      transition: transform 0.08s ease;
     }
 
-    .toggle-btn .icon-expand { display: none; }
-    .toggle-btn .icon-collapse { display: block; }
+    .toggle-btn-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .icon-toggle {
+      width: 17px;
+      height: 17px;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Chevron arrow micro-nudge inside the toggle icon */
+    .toggle-chevron {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: 12.5px 12px;
+    }
+
+    /* In expanded state: hover nudges arrow slightly left */
+    .toggle-btn:hover .toggle-chevron {
+      transform: translateX(-2px);
+    }
+
+    /* Click ripple wave */
+    .toggle-btn .ripple-wave {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.25);
+      pointer-events: none;
+      transform: scale(0);
+      opacity: 0;
+    }
+
+    .toggle-btn.clicked .ripple-wave {
+      animation: rippleAnim 0.4s ease-out;
+    }
+
+    @keyframes rippleAnim {
+      0% { transform: scale(0); opacity: 0.8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
 
     /* Section titles */
     .section-title {
@@ -154,14 +215,19 @@
       text-transform: uppercase;
       white-space: nowrap;
       overflow: hidden;
+      transition: opacity 0.2s ease, max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease;
+      max-height: 40px;
     }
 
     .nav-list {
       list-style: none;
       padding: 0 8px;
+      transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Nav Items */
+    /* =========================================================================
+       TAB SHIFTING & NAV ITEM ANIMATIONS
+       ========================================================================= */
     .nav-item {
       position: relative;
       display: flex;
@@ -173,22 +239,50 @@
       font-weight: 500;
       cursor: pointer;
       color: #334155;
-      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       margin-bottom: 2px;
       white-space: nowrap;
-      border-left: 3px solid transparent;
+      overflow: hidden;
+      transition: background 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                  color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .nav-item:hover {
       background: var(--hover-bg);
       color: var(--text-primary);
+      transform: translateX(2px);
+    }
+
+    .nav-item:active {
+      transform: scale(0.96) !important;
+      transition: transform 0.08s ease;
+    }
+
+    /* Spring-loaded active indicator bar */
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3.5px;
+      background: var(--active-indicator);
+      border-radius: 0 3px 3px 0;
+      transform: scaleY(0);
+      opacity: 0;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
     }
 
     .nav-item.active {
       background: var(--accent-green-bg);
       color: var(--accent-green-dark);
       font-weight: 600;
-      border-left-color: var(--active-indicator);
+    }
+
+    .nav-item.active::before {
+      transform: scaleY(1);
+      opacity: 1;
     }
 
     .nav-label {
@@ -203,21 +297,26 @@
       height: 18px;
       flex-shrink: 0;
       color: #64748b;
-      transition: color 0.15s ease;
+      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.15s ease;
     }
 
     .nav-item:hover .nav-icon {
       color: var(--text-primary);
+      transform: scale(1.12);
     }
 
     .nav-item.active .nav-icon {
       color: var(--accent-green-dark);
+      transform: scale(1.05);
     }
 
     .nav-text {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: left center;
     }
 
     /* Badge */
@@ -230,6 +329,17 @@
       padding: 1px 6px;
       line-height: 1.4;
       box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+    }
+
+    .badge.pop {
+      animation: badgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes badgePop {
+      0% { transform: scale(0.6); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
 
     /* Danger action */
@@ -248,12 +358,14 @@
       height: 1px;
       background: var(--border-color);
       margin: 10px 12px;
+      transition: margin 0.25s ease;
     }
 
     /* Footer Status Card */
     .footer {
       margin-top: auto;
       padding: 12px;
+      transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .status-card {
@@ -263,6 +375,12 @@
       padding: 10px 12px;
       font-size: 12px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .status-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .status-header {
@@ -272,6 +390,12 @@
       font-weight: 600;
       color: #0f172a;
       margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .status-title-text {
+      transition: opacity 0.2s ease;
     }
 
     .dot-pulse-wrapper {
@@ -281,6 +405,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .dot {
@@ -297,23 +422,27 @@
       height: 14px;
       border-radius: 50%;
       background: var(--accent-green);
-      opacity: 0.3;
-      animation: pulse 2s infinite ease-out;
+      opacity: 0.35;
+      animation: pulse 2.2s infinite ease-out;
     }
 
     @keyframes pulse {
-      0% { transform: scale(0.6); opacity: 0.6; }
-      100% { transform: scale(1.6); opacity: 0; }
+      0% { transform: scale(0.6); opacity: 0.7; }
+      100% { transform: scale(2); opacity: 0; }
     }
 
     .status-desc {
       color: var(--text-muted);
       font-size: 11px;
       line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+      max-height: 30px;
     }
 
     /* =========================================================================
-       COLLAPSED STATE (64px width)
+       COLLAPSED STATE (64px width) - SMOOTH TRANSITIONS
        ========================================================================= */
     body.collapsed {
       width: 64px;
@@ -324,12 +453,18 @@
       justify-content: center;
     }
 
-    body.collapsed .brand-info {
-      display: none;
+    body.collapsed .brand-group {
+      opacity: 0;
+      transform: translateX(-16px) scale(0.9);
+      pointer-events: none;
+      position: absolute;
     }
 
-    body.collapsed .brand-group {
-      display: none;
+    body.collapsed .brand-info {
+      opacity: 0;
+      transform: translateX(-14px) scale(0.95);
+      pointer-events: none;
+      position: absolute;
     }
 
     body.collapsed .toggle-btn {
@@ -340,11 +475,22 @@
       color: var(--text-primary);
     }
 
-    body.collapsed .toggle-btn .icon-collapse { display: none; }
-    body.collapsed .toggle-btn .icon-expand { display: block; }
+    /* In collapsed state: Chevron smoothly rotates 180 degrees to point right! */
+    body.collapsed .toggle-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* On hover in collapsed mode: arrow nudges right */
+    body.collapsed .toggle-btn:hover .toggle-chevron {
+      transform: rotate(180deg) translateX(-2px);
+    }
 
     body.collapsed .section-title {
-      display: none;
+      opacity: 0;
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      pointer-events: none;
     }
 
     body.collapsed .divider {
@@ -358,29 +504,41 @@
     body.collapsed .nav-item {
       justify-content: center;
       padding: 10px 0;
-      border-left: none;
       border-radius: 8px;
+      transform: none !important;
+    }
+
+    body.collapsed .nav-item:hover {
+      transform: scale(1.08) !important;
+    }
+
+    body.collapsed .nav-item::before {
+      display: none;
     }
 
     body.collapsed .nav-item.active {
       background: var(--accent-green-bg);
-      border-left: none;
       position: relative;
     }
 
-    body.collapsed .nav-item.active::before {
+    body.collapsed .nav-item.active::after {
+      /* Active pill side dot */
       content: '';
       position: absolute;
-      left: 2px;
-      top: 8px;
-      bottom: 8px;
+      left: 3px;
+      top: 50%;
+      transform: translateY(-50%);
       width: 3px;
+      height: 14px;
       background: var(--accent-green);
       border-radius: 2px;
     }
 
     body.collapsed .nav-text {
-      display: none;
+      opacity: 0;
+      transform: translateX(-10px);
+      pointer-events: none;
+      position: absolute;
     }
 
     body.collapsed .badge {
@@ -412,25 +570,28 @@
       border-radius: 8px;
     }
 
-    body.collapsed .status-header span:not(.dot-pulse-wrapper) {
-      display: none;
-    }
-
+    body.collapsed .status-title-text,
     body.collapsed .status-desc {
+      opacity: 0;
+      max-height: 0;
+      pointer-events: none;
       display: none;
     }
 
-    /* Floating Tooltip in Collapsed Mode */
+    /* Floating Tooltip in Collapsed Mode with Smooth Slide & Fade */
+    body.collapsed .nav-item::before {
+      display: none;
+    }
+
     .tooltip-anchor {
       position: relative;
     }
 
-    body.collapsed .nav-item::after {
-      content: attr(data-tooltip);
+    body.collapsed .nav-item .floating-tooltip {
       position: absolute;
-      left: 58px;
+      left: 56px;
       top: 50%;
-      transform: translateY(-50%);
+      transform: translateY(-50%) translateX(-6px) scale(0.95);
       background: #0f172a;
       color: #ffffff;
       padding: 5px 9px;
@@ -440,14 +601,15 @@
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.15s ease, transform 0.15s ease;
+      transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 999;
     }
 
-    body.collapsed .nav-item:hover::after {
+    body.collapsed .nav-item:hover .floating-tooltip {
       opacity: 1;
-      transform: translateY(-50%) translateX(2px);
+      transform: translateY(-50%) translateX(4px) scale(1);
     }
   </style>
 
@@ -481,13 +643,18 @@
       }
     };
 
-    // Toggle Sidebar hide / unhide
+    // Toggle Sidebar hide / unhide with ripple feedback
     window.__toggleSidebar = async function() {
       try {
+        var btn = document.getElementById('sidebar-toggle-btn');
+        if (btn) {
+          btn.classList.add('clicked');
+          setTimeout(function() { btn.classList.remove('clicked'); }, 400);
+        }
+
         if (window.dashboardApi && typeof window.dashboardApi.toggleSidebar === 'function') {
           var isCollapsed = await window.dashboardApi.toggleSidebar();
           document.body.classList.toggle('collapsed', isCollapsed);
-          var btn = document.getElementById('sidebar-toggle-btn');
           if (btn) {
             btn.title = isCollapsed ? 'Unhide sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)';
           }
@@ -536,6 +703,11 @@
           var badge = document.getElementById('badge-count');
           if (badge) {
             if (kpis && kpis.sensitiveDetections > 0) {
+              if (badge.textContent !== String(kpis.sensitiveDetections)) {
+                badge.classList.remove('pop');
+                void badge.offsetWidth; // trigger reflow
+                badge.classList.add('pop');
+              }
               badge.textContent = kpis.sensitiveDetections;
               badge.style.display = 'inline-block';
             } else {
@@ -593,7 +765,7 @@
   </script>
 </head>
 <body>
-  <!-- Header with Brand and Hide/Unhide Button -->
+  <!-- Header with Brand and Animated Hide/Unhide Button -->
   <div class="sidebar-header">
     <div class="brand-group">
       <div class="brand-icon-wrapper">
@@ -610,51 +782,51 @@
       </div>
     </div>
 
-    <!-- Toggle Collapse / Expand Button -->
+    <!-- Animated Toggle Collapse / Expand Button -->
     <button id="sidebar-toggle-btn" class="toggle-btn" onclick="window.__toggleSidebar()" title="Hide sidebar (Ctrl+B)" aria-label="Toggle sidebar">
-      <!-- Collapse Icon (shows when expanded) -->
-      <svg class="icon-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-        <line x1="9" y1="3" x2="9" y2="21"/>
-        <path d="M14 9l-3 3 3 3"/>
-      </svg>
-      <!-- Expand Icon (shows when collapsed) -->
-      <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-        <line x1="9" y1="3" x2="9" y2="21"/>
-        <path d="M12 9l3 3-3 3"/>
-      </svg>
+      <div class="toggle-btn-inner">
+        <svg class="icon-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="9" y1="3" x2="9" y2="21"/>
+          <!-- Animated Chevron: rotates 180° when collapsed, nudges on hover -->
+          <path class="toggle-chevron" d="M14 9l-3 3 3 3"/>
+        </svg>
+      </div>
+      <span class="ripple-wave"></span>
     </button>
   </div>
 
   <!-- Workspace Nav -->
   <div class="section-title">WORKSPACE</div>
   <ul class="nav-list" id="workspace-nav">
-    <li class="nav-item active" data-tab="dashboard" data-tooltip="Dashboard" onclick="window.__selectTab('dashboard')">
+    <li class="nav-item active" data-tab="dashboard" onclick="window.__selectTab('dashboard')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
         </svg>
         <span class="nav-text">Dashboard</span>
       </div>
+      <span class="floating-tooltip">Dashboard</span>
     </li>
-    <li class="nav-item" data-tab="chatgpt" data-tooltip="ChatGPT" onclick="window.__selectTab('chatgpt')">
+    <li class="nav-item" data-tab="chatgpt" onclick="window.__selectTab('chatgpt')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
         <span class="nav-text">ChatGPT</span>
       </div>
+      <span class="floating-tooltip">ChatGPT</span>
     </li>
-    <li class="nav-item" data-tab="perplexity" data-tooltip="Perplexity" onclick="window.__selectTab('perplexity')">
+    <li class="nav-item" data-tab="perplexity" onclick="window.__selectTab('perplexity')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
         </svg>
         <span class="nav-text">Perplexity</span>
       </div>
+      <span class="floating-tooltip">Perplexity</span>
     </li>
-    <li class="nav-item" data-tab="logs" data-tooltip="Audit Log" onclick="window.__selectTab('logs')">
+    <li class="nav-item" data-tab="logs" onclick="window.__selectTab('logs')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -665,14 +837,16 @@
         <span class="nav-text">Audit Log</span>
       </div>
       <span class="badge" id="badge-count" style="display: none;">0</span>
+      <span class="floating-tooltip">Audit Log</span>
     </li>
-    <li class="nav-item" data-tab="settings" data-tooltip="Settings" onclick="window.__selectTab('settings')">
+    <li class="nav-item" data-tab="settings" onclick="window.__selectTab('settings')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
         </svg>
         <span class="nav-text">Settings</span>
       </div>
+      <span class="floating-tooltip">Settings</span>
     </li>
   </ul>
 
@@ -681,29 +855,32 @@
   <!-- Quick Actions Nav -->
   <div class="section-title">QUICK ACTIONS</div>
   <ul class="nav-list">
-    <li class="nav-item" id="btn-scan-file" data-tooltip="Scan a file" onclick="window.__scanFileDebug()">
+    <li class="nav-item" id="btn-scan-file" onclick="window.__scanFileDebug()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><circle cx="11" cy="14" r="3"/><line x1="13.5" y1="16.5" x2="16" y2="19"/>
         </svg>
         <span class="nav-text">Scan a file</span>
       </div>
+      <span class="floating-tooltip">Scan a file</span>
     </li>
-    <li class="nav-item" id="btn-export-csv" data-tooltip="Export CSV" onclick="window.__exportCsv()">
+    <li class="nav-item" id="btn-export-csv" onclick="window.__exportCsv()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
         <span class="nav-text">Export CSV</span>
       </div>
+      <span class="floating-tooltip">Export CSV</span>
     </li>
-    <li class="nav-item danger" id="btn-clear-data" data-tooltip="Clear data" onclick="window.__clearData()">
+    <li class="nav-item danger" id="btn-clear-data" onclick="window.__clearData()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
         </svg>
         <span class="nav-text">Clear data</span>
       </div>
+      <span class="floating-tooltip">Clear data</span>
     </li>
   </ul>
 
@@ -715,7 +892,7 @@
           <span class="dot-ping"></span>
           <span class="dot"></span>
         </div>
-        <span>Guard Active</span>
+        <span class="status-title-text">Guard Active</span>
       </div>
       <div class="status-desc">ChatGPT &amp; Perplexity protected</div>
     </div>

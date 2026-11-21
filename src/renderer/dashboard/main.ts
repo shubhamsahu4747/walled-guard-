@@ -368,6 +368,18 @@ function initEventHandlers(): void {
 
   // Periodic refresh every 10 seconds
   setInterval(refreshAll, 10000);
+
+  // Entrance animation on tab switch
+  if (win.dashboardApi?.onTabSwitched) {
+    win.dashboardApi.onTabSwitched((tab: string) => {
+      if (tab === 'dashboard') {
+        document.body.classList.remove('tab-enter-anim');
+        void document.body.offsetWidth; // trigger reflow
+        document.body.classList.add('tab-enter-anim');
+        refreshAll();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
