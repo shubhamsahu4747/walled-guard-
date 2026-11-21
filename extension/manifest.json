@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Walled Guard - DLP for ChatGPT & Perplexity",
+  "version": "1.0.0",
+  "description": "Lightweight Data Loss Prevention guard for ChatGPT and Perplexity. Intercepts sensitive prompts and file uploads in real browsers.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAses96ziuYB4YCIwWS3U+dXfzKGg5nKTiBBpU/wMZY1GuRfa7mjyseqEBAYZxbxi9RwjQlFzE7KcMpRb2vBM/jX5lycJ/v+g2qmACq8ARuqDN0u1SRRYi1WyXd8nMIGghoxTass/xwIYWfkY7VAAjrQOoXkcywektsoU1LZ2Urxq2xKfgjBRq8Ku6cuUYJoOne0g8MbbzV14BGpPH/izqb9YOpL3UQqkvog9/bYVYE5LS3005iDzKtFYMrrxl0tkYwIHMpBz8qAS+dAwrbOTjKYhplqiDYD0W7WlaK0USJPaTa4zV+Bcsnit4+SB7l08HmMxrkjIyVRcTUD5KCXnAdwIDAQAB",
+  "permissions": [
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://*.chatgpt.com/*",
+    "https://www.perplexity.ai/*",
+    "https://*.perplexity.ai/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://*.chatgpt.com/*",
+        "https://www.perplexity.ai/*",
+        "https://*.perplexity.ai/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

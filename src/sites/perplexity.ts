@@ -129,15 +129,20 @@ export function createPerplexityAdapter(): SiteAdapter {
         [data-testid="answer-content"],
         .prose.dark\\:prose-invert,
         .prose {
+          --text-primary: ${color} !important;
           color: ${color} !important;
         }
         [data-testid="answer-content"] p,
         [data-testid="answer-content"] span:not([class*="token"]),
         [data-testid="answer-content"] li,
+        [data-testid="answer-content"] strong,
+        [data-testid="answer-content"] em,
         .prose p,
         .prose span:not([class*="token"]),
-        .prose li {
-          color: inherit !important;
+        .prose li,
+        .prose strong,
+        .prose em {
+          color: ${color} !important;
         }
         /* Exclude code blocks, syntax highlight tokens, links, and tables for complete readability (R5.4) */
         [data-testid="answer-content"] pre,
@@ -148,6 +153,9 @@ export function createPerplexityAdapter(): SiteAdapter {
         [data-testid="answer-content"] a *,
         [data-testid="answer-content"] table,
         [data-testid="answer-content"] table *,
+        [data-testid="answer-content"] button,
+        [data-testid="answer-content"] button *,
+        [data-testid="answer-content"] svg,
         .prose pre,
         .prose pre *,
         .prose code,
@@ -155,7 +163,10 @@ export function createPerplexityAdapter(): SiteAdapter {
         .prose a,
         .prose a *,
         .prose table,
-        .prose table * {
+        .prose table *,
+        .prose button,
+        .prose button *,
+        .prose svg {
           color: revert !important;
         }
       `;

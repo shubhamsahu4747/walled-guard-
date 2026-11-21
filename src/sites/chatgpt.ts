@@ -135,13 +135,29 @@ export function createChatGPTAdapter(): SiteAdapter {
         /* ChatGPT AI response text recoloring (R5.1 - R5.4) */
         [data-message-author-role="assistant"],
         div[data-testid="conversation-turn-agent"],
-        .agent-turn {
+        .agent-turn,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) {
+          --text-primary: ${color} !important;
           color: ${color} !important;
         }
         [data-message-author-role="assistant"] p,
         [data-message-author-role="assistant"] li,
-        [data-message-author-role="assistant"] span:not([class*="token"]) {
-          color: inherit !important;
+        [data-message-author-role="assistant"] span:not([class*="token"]),
+        [data-message-author-role="assistant"] strong,
+        [data-message-author-role="assistant"] em,
+        [data-message-author-role="assistant"] div.markdown,
+        [data-message-author-role="assistant"] div.markdown *,
+        .agent-turn p,
+        .agent-turn li,
+        .agent-turn span:not([class*="token"]),
+        .agent-turn strong,
+        .agent-turn em,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) .markdown,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) .markdown *,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) p,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) li,
+        article[data-testid*="conversation-turn"]:not(:has([data-message-author-role="user"])) span:not([class*="token"]) {
+          color: ${color} !important;
         }
         /* Exclude code blocks, syntax highlight tokens, links, and tables for complete readability (R5.4) */
         [data-message-author-role="assistant"] pre,
@@ -151,7 +167,21 @@ export function createChatGPTAdapter(): SiteAdapter {
         [data-message-author-role="assistant"] a,
         [data-message-author-role="assistant"] a *,
         [data-message-author-role="assistant"] table,
-        [data-message-author-role="assistant"] table * {
+        [data-message-author-role="assistant"] table *,
+        [data-message-author-role="assistant"] button,
+        [data-message-author-role="assistant"] button *,
+        [data-message-author-role="assistant"] svg,
+        article[data-testid*="conversation-turn"] pre,
+        article[data-testid*="conversation-turn"] pre *,
+        article[data-testid*="conversation-turn"] code,
+        article[data-testid*="conversation-turn"] code *,
+        article[data-testid*="conversation-turn"] a,
+        article[data-testid*="conversation-turn"] a *,
+        article[data-testid*="conversation-turn"] table,
+        article[data-testid*="conversation-turn"] table *,
+        article[data-testid*="conversation-turn"] button,
+        article[data-testid*="conversation-turn"] button *,
+        article[data-testid*="conversation-turn"] svg {
           color: revert !important;
         }
       `;

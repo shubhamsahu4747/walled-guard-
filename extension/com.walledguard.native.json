@@ -1,0 +1,9 @@
+{
+  "name": "com.walledguard.native",
+  "description": "Walled Guard DLP Native Messaging Host",
+  "path": "E:\\personal-project\\walled-guard\\scripts\\native-host.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://jcbcffpofhmgdhgklfpkdkokojkkgjnf/"
+  ]
+}
