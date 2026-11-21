@@ -1,0 +1,21 @@
+{
+  "name": "walled-guard",
+  "version": "1.0.0",
+  "description": "Lightweight DLP desktop guard for ChatGPT and Perplexity",
+  "main": "out/main/index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "dlp",
+    "electron",
+    "chatgpt",
+    "perplexity",
+    "security"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^45.4.1"
+  }
+}
