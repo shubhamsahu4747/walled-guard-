@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walled Guard - Starting...</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      color: #f8fafc;
+    }
+
+    .splash-card {
+      width: 480px;
+      height: 380px;
+      background: linear-gradient(150deg, #0f172a 0%, #020617 100%);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 36px rgba(16, 185, 129, 0.15);
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .splash-card.fade-out {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+
+    /* Ambient background glow */
+    .glow-sphere {
+      position: absolute;
+      top: 25px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0) 70%);
+      pointer-events: none;
+      animation: ambientBreath 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes ambientBreath {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1.15); opacity: 0.85; }
+    }
+
+    /* Lottie Container */
+    #lottie-shield {
+      width: 180px;
+      height: 180px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 6px 16px rgba(16, 185, 129, 0.3));
+    }
+
+    /* Brand Header */
+    .brand-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2px;
+      z-index: 2;
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-top: 3px;
+    }
+
+    /* Progress & Status */
+    .progress-section {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 22px;
+      z-index: 2;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981 0%, #34d399 70%, #6ee7b7 100%);
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .status-ticker {
+      font-size: 11.5px;
+      color: #64748b;
+      margin-top: 9px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: opacity 0.18s ease;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+      box-shadow: 0 0 8px #10b981;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="splash-card" id="splash-card">
+    <div class="glow-sphere"></div>
+
+    <!-- Lottie Animation Container -->
+    <div id="lottie-shield"></div>
+
+    <div class="brand-section">
+      <div class="brand-title">
+        WALLED GUARD
+        <span class="brand-badge">DLP ACTIVE</span>
+      </div>
+      <div class="brand-tagline">Data Loss Prevention Sentinel for AI</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-track">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="status-ticker">
+        <span class="status-dot"></span>
+        <span id="status-label">Initializing DLP Sentinel...</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

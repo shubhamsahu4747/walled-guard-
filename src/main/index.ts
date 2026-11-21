@@ -1,5 +1,6 @@
 import { app, ipcMain } from 'electron';
 import { createMainWindow, AppWindow } from './window/main-window';
+import { createSplashWindow } from './window/splash-window';
 import { configureWebSession } from './window/session';
 import { configureUploadGuard } from './network/upload-guard';
 import { registerGuardHandler } from './ipc/guard-handler';
@@ -19,6 +20,10 @@ async function bootstrap(): Promise<void> {
     app.setAppUserModelId('com.walledguard.app');
   }
 
+  // 1. Show Splash Screen with Lottie Animation
+  const splash = createSplashWindow();
+
+  // 2. Initialize security guards, handlers, and session
   const ses = configureWebSession();
   configureUploadGuard(ses);
 
@@ -26,7 +31,19 @@ async function bootstrap(): Promise<void> {
   registerSettingsHandler();
   registerGuardHandler(() => (appWindow ? appWindow.window : null));
 
-  appWindow = createMainWindow();
+  // 3. Create Main Window (hidden initially while splash plays)
+  appWindow = createMainWindow(false);
+
+  // 4. Smooth transition from Splash to Main Window
+  setTimeout(() => {
+    splash.closeSplash();
+    setTimeout(() => {
+      if (appWindow) {
+        appWindow.window.show();
+        appWindow.window.focus();
+      }
+    }, 280);
+  }, 1800);
 
   // Listen for settings color change and update active web tabs
   onSettingsChange((settings) => {

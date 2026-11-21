@@ -1,0 +1,440 @@
+const fs = require('fs');
+const path = require('path');
+
+// Generate a valid Bodymovin / Lottie 5.7+ JSON for Walled Guard Security Shield
+const lottie = {
+  v: '5.7.4',
+  fr: 60,
+  ip: 0,
+  op: 150, // 2.5 seconds at 60fps
+  w: 300,
+  h: 300,
+  nm: 'WalledGuardSplashShield',
+  ddd: 0,
+  assets: [],
+  layers: [
+    // Layer 1: Radar Scan Beam (Sweeps down the shield)
+    {
+      ddd: 0,
+      ind: 1,
+      ty: 4, // Shape layer
+      nm: 'Scan Beam',
+      sr: 1,
+      ks: {
+        o: {
+          a: 1,
+          k: [
+            { t: 0, s: [0], e: [0] },
+            { t: 30, s: [0], e: [70] },
+            { t: 80, s: [70], e: [0] },
+            { t: 150, s: [0] }
+          ]
+        },
+        r: { a: 0, k: 0 },
+        p: {
+          a: 1,
+          k: [
+            { t: 30, s: [150, 70, 0], e: [150, 240, 0] },
+            { t: 80, s: [150, 240, 0] }
+          ]
+        },
+        a: { a: 0, k: [0, 0, 0] },
+        s: {
+          a: 1,
+          k: [
+            { t: 30, s: [80, 100, 100], e: [110, 100, 100] },
+            { t: 60, s: [110, 100, 100], e: [70, 100, 100] },
+            { t: 80, s: [70, 100, 100] }
+          ]
+        }
+      },
+      ao: 0,
+      shapes: [
+        {
+          ty: 'gr',
+          nm: 'Beam Line',
+          it: [
+            {
+              ty: 'rc',
+              d: 1,
+              s: { a: 0, k: [140, 4] },
+              p: { a: 0, k: [0, 0] },
+              r: { a: 0, k: 2 }
+            },
+            {
+              ty: 'fl',
+              c: { a: 0, k: [0.2, 0.95, 0.65, 1] },
+              o: { a: 0, k: 100 }
+            },
+            {
+              ty: 'tr',
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ],
+      ip: 0,
+      op: 150,
+      st: 0
+    },
+
+    // Layer 2: Center Emblem (Security Fortress Checkmark)
+    {
+      ddd: 0,
+      ind: 2,
+      ty: 4,
+      nm: 'Center Checkmark',
+      sr: 1,
+      ks: {
+        o: {
+          a: 1,
+          k: [
+            { t: 0, s: [0], e: [0] },
+            { t: 35, s: [0], e: [100] },
+            { t: 50, s: [100] }
+          ]
+        },
+        r: { a: 0, k: 0 },
+        p: { a: 0, k: [150, 150, 0] },
+        a: { a: 0, k: [0, 0, 0] },
+        s: {
+          a: 1,
+          k: [
+            { t: 35, s: [0, 0, 100], e: [120, 120, 100] },
+            { t: 50, s: [120, 120, 100], e: [95, 95, 100] },
+            { t: 60, s: [95, 95, 100], e: [100, 100, 100] },
+            { t: 70, s: [100, 100, 100] }
+          ]
+        }
+      },
+      ao: 0,
+      shapes: [
+        {
+          ty: 'gr',
+          nm: 'Check Path',
+          it: [
+            {
+              ty: 'sh',
+              d: 1,
+              ks: {
+                a: 0,
+                k: {
+                  c: false,
+                  v: [[-32, 2], [-8, 26], [36, -18]],
+                  i: [[0, 0], [0, 0], [0, 0]],
+                  o: [[0, 0], [0, 0], [0, 0]]
+                }
+              }
+            },
+            {
+              ty: 'st',
+              c: { a: 0, k: [1, 1, 1, 1] }, // Pure white
+              o: { a: 0, k: 100 },
+              w: { a: 0, k: 14 },
+              lc: 2, // Round cap
+              lj: 2  // Round join
+            },
+            {
+              ty: 'tr',
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ],
+      ip: 0,
+      op: 150,
+      st: 0
+    },
+
+    // Layer 3: Inner Shield Body (Fills and glows)
+    {
+      ddd: 0,
+      ind: 3,
+      ty: 4,
+      nm: 'Inner Shield Core',
+      sr: 1,
+      ks: {
+        o: {
+          a: 1,
+          k: [
+            { t: 0, s: [0], e: [0] },
+            { t: 25, s: [0], e: [95] },
+            { t: 45, s: [95] },
+            { t: 90, s: [95], e: [85] },
+            { t: 120, s: [85], e: [95] },
+            { t: 150, s: [95] }
+          ]
+        },
+        r: { a: 0, k: 0 },
+        p: { a: 0, k: [150, 150, 0] },
+        a: { a: 0, k: [0, 0, 0] },
+        s: {
+          a: 1,
+          k: [
+            { t: 25, s: [50, 50, 100], e: [105, 105, 100] },
+            { t: 45, s: [105, 105, 100], e: [100, 100, 100] },
+            { t: 90, s: [100, 100, 100], e: [103, 103, 100] },
+            { t: 120, s: [103, 103, 100], e: [100, 100, 100] },
+            { t: 150, s: [100, 100, 100] }
+          ]
+        }
+      },
+      ao: 0,
+      shapes: [
+        {
+          ty: 'gr',
+          nm: 'Inner Shield',
+          it: [
+            {
+              ty: 'sh',
+              d: 1,
+              ks: {
+                a: 0,
+                k: {
+                  c: true,
+                  v: [
+                    [0, -78],
+                    [65, -55],
+                    [65, 15],
+                    [0, 85],
+                    [-65, 15],
+                    [-65, -55]
+                  ],
+                  i: [
+                    [0, 0],
+                    [-25, -10],
+                    [0, -25],
+                    [35, -20],
+                    [0, 25],
+                    [25, -10]
+                  ],
+                  o: [
+                    [0, 0],
+                    [0, 25],
+                    [-35, 20],
+                    [0, 0],
+                    [0, -25],
+                    [-25, 10]
+                  ]
+                }
+              }
+            },
+            {
+              ty: 'fl',
+              c: { a: 0, k: [0.03, 0.22, 0.18, 1] }, // Dark teal-emerald
+              o: { a: 0, k: 100 }
+            },
+            {
+              ty: 'st',
+              c: { a: 0, k: [0.06, 0.72, 0.5, 1] }, // Vibrant emerald border
+              o: { a: 0, k: 90 },
+              w: { a: 0, k: 3 }
+            },
+            {
+              ty: 'tr',
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ],
+      ip: 0,
+      op: 150,
+      st: 0
+    },
+
+    // Layer 4: Outer Shield Outline with Animated Trim Path (Draws itself!)
+    {
+      ddd: 0,
+      ind: 4,
+      ty: 4,
+      nm: 'Outer Shield Vector Stroke',
+      sr: 1,
+      ks: {
+        o: {
+          a: 1,
+          k: [
+            { t: 0, s: [100], e: [100] },
+            { t: 150, s: [100] }
+          ]
+        },
+        r: { a: 0, k: 0 },
+        p: { a: 0, k: [150, 150, 0] },
+        a: { a: 0, k: [0, 0, 0] },
+        s: {
+          a: 1,
+          k: [
+            { t: 0, s: [92, 92, 100], e: [100, 100, 100] },
+            { t: 40, s: [100, 100, 100] }
+          ]
+        }
+      },
+      ao: 0,
+      shapes: [
+        {
+          ty: 'gr',
+          nm: 'Shield Outline Group',
+          it: [
+            {
+              ty: 'sh',
+              d: 1,
+              ks: {
+                a: 0,
+                k: {
+                  c: true,
+                  v: [
+                    [0, -100],
+                    [84, -70],
+                    [84, 20],
+                    [0, 105],
+                    [-84, 20],
+                    [-84, -70]
+                  ],
+                  i: [
+                    [0, 0],
+                    [-30, -12],
+                    [0, -35],
+                    [45, -25],
+                    [0, 35],
+                    [30, -12]
+                  ],
+                  o: [
+                    [0, 0],
+                    [0, 35],
+                    [-45, 25],
+                    [0, 0],
+                    [0, -35],
+                    [-30, 12]
+                  ]
+                }
+              }
+            },
+            // Trim Path for drawing effect
+            {
+              ty: 'tm',
+              s: { a: 0, k: 0 },
+              e: {
+                a: 1,
+                k: [
+                  { t: 0, s: [0], e: [100] },
+                  { t: 42, s: [100] }
+                ]
+              },
+              o: { a: 0, k: 0 },
+              m: 1
+            },
+            {
+              ty: 'st',
+              c: { a: 0, k: [0.06, 0.72, 0.5, 1] }, // Emerald #10b981
+              o: { a: 0, k: 100 },
+              w: { a: 0, k: 7 },
+              lc: 2,
+              lj: 2
+            },
+            {
+              ty: 'tr',
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ],
+      ip: 0,
+      op: 150,
+      st: 0
+    },
+
+    // Layer 5: Pulsing Radar Halo Rings (Ambient Energy)
+    {
+      ddd: 0,
+      ind: 5,
+      ty: 4,
+      nm: 'Radar Halo Ring',
+      sr: 1,
+      ks: {
+        o: {
+          a: 1,
+          k: [
+            { t: 0, s: [0], e: [0] },
+            { t: 40, s: [0], e: [45] },
+            { t: 80, s: [45], e: [0] },
+            { t: 110, s: [0], e: [45] },
+            { t: 150, s: [0] }
+          ]
+        },
+        r: { a: 0, k: 0 },
+        p: { a: 0, k: [150, 150, 0] },
+        a: { a: 0, k: [0, 0, 0] },
+        s: {
+          a: 1,
+          k: [
+            { t: 40, s: [80, 80, 100], e: [140, 140, 100] },
+            { t: 80, s: [140, 140, 100] },
+            { t: 110, s: [80, 80, 100], e: [140, 140, 100] },
+            { t: 150, s: [140, 140, 100] }
+          ]
+        }
+      },
+      ao: 0,
+      shapes: [
+        {
+          ty: 'gr',
+          nm: 'Halo Circle',
+          it: [
+            {
+              ty: 'el',
+              d: 1,
+              s: { a: 0, k: [160, 160] },
+              p: { a: 0, k: [0, 0] }
+            },
+            {
+              ty: 'st',
+              c: { a: 0, k: [0.2, 0.9, 0.6, 1] },
+              o: { a: 0, k: 50 },
+              w: { a: 0, k: 2 }
+            },
+            {
+              ty: 'tr',
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ],
+      ip: 0,
+      op: 150,
+      st: 0
+    }
+  ]
+};
+
+const outDir = path.join(__dirname, '../src/renderer/splash');
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+
+const outPath = path.join(outDir, 'shield-lottie.json');
+fs.writeFileSync(outPath, JSON.stringify(lottie, null, 2));
+
+const jsPath = path.join(outDir, 'shield-lottie-data.js');
+fs.writeFileSync(jsPath, `window.__SHIELD_LOTTIE_DATA__ = ${JSON.stringify(lottie, null, 2)};\n`);
+
+console.log('Lottie JSON successfully generated at:', outPath);
+console.log('Lottie JS data successfully generated at:', jsPath);

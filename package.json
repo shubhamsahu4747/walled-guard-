@@ -55,6 +55,7 @@
     "dotenv": "^18.0.10",
     "drizzle-orm": "^0.45.4",
     "jimp": "^1.6.1",
+    "lottie-web": "^5.13.0",
     "pdfjs-dist": "^6.5.438",
     "pg": "^8.23.1",
     "tesseract.js": "^7.0.0"

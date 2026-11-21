@@ -23,7 +23,7 @@ function getAppIconPath(): string {
   return icoPath;
 }
 
-export function createMainWindow(): AppWindow {
+export function createMainWindow(showInitially = true): AppWindow {
   const iconPath = getAppIconPath();
   logger.info(`Using application icon: ${iconPath}`);
 
@@ -33,6 +33,7 @@ export function createMainWindow(): AppWindow {
     minWidth: 1024,
     minHeight: 700,
     title: 'Walled Guard',
+    show: showInitially,
     icon: iconPath
   });
 
