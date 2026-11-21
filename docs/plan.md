@@ -33,10 +33,10 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: `npm test` passes the full matrix: every fixture returns the correct verdict, and a clean prompt scans in under 50 ms. (28/28 tests passing)
 
 ## Phase 3: Native dialog and decision engine
-- [ ] 3.1 `confirm-dialog.ts` per architecture section 9 (Continue/Cancel, Cancel default, Esc cancels).
-- [ ] 3.2 `guard-handler.ts`: validates payload, scans, shows the dialog only if found or failed, returns `Decision`, logs the event.
-- [ ] 3.3 Dev-only debug command to trigger the dialog with fake input.
-  Done when: the dialog shows the correct type (prompt/file), name or snippet, and both buttons return the right decision.
+- [x] 3.1 `confirm-dialog.ts` per architecture section 9 (Continue/Cancel, Cancel default, Esc cancels).
+- [x] 3.2 `guard-handler.ts`: validates payload, scans, shows the dialog only if found or failed, returns `Decision`, logs the event.
+- [x] 3.3 Dev-only debug command to trigger the dialog with fake input.
+  Done when: the dialog shows the correct type (prompt/file), name or snippet, and both buttons return the right decision. (31/31 tests passing)
 
 ## Phase 4: In-page gates (web integration)
 - [ ] 4.1 `sites/` adapters for ChatGPT and Perplexity using ONLY the selectors verified in Phase 0.
