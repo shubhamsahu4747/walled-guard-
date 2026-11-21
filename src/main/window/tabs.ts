@@ -64,7 +64,7 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     webPreferences: {
       partition: PERSISTENT_PARTITION,
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
       nodeIntegration: false,
       preload: webPreload
     }
@@ -89,7 +89,7 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     webPreferences: {
       partition: PERSISTENT_PARTITION,
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
       nodeIntegration: false,
       preload: webPreload
     }
