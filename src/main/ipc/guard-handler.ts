@@ -1,4 +1,6 @@
-import { ipcMain, BaseWindow } from 'electron';
+import { ipcMain, BaseWindow, dialog } from 'electron';
+import fs from 'fs';
+import path from 'path';
 import { IPC_CHANNELS } from '../../shared/ipc-channels';
 import { validateScanRequest } from '../../shared/schema';
 import { Decision, ScanRequest, ScanVerdict, FileType } from '../../shared/types';
@@ -108,6 +110,79 @@ export function registerGuardHandler(getParentWindow: () => BaseWindow | null): 
       }
 
       if (variant === 'file') {
+        // Allow user to select a real file to inspect
+        try {
+          const dialogOptions = {
+            title: 'Select a file to inspect with Walled Guard DLP',
+            properties: ['openFile'] as ('openFile')[],
+            filters: [
+              { name: 'Supported Files (*.txt, *.pdf, *.png, *.jpg)', extensions: ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'csv', 'json'] },
+              { name: 'All Files', extensions: ['*'] }
+            ]
+          };
+          const openRes = win
+            ? await dialog.showOpenDialog(win, dialogOptions)
+            : await dialog.showOpenDialog(dialogOptions);
+
+          if (!openRes.canceled && openRes.filePaths.length > 0) {
+            const selectedPath = openRes.filePaths[0];
+            const fileName = path.basename(selectedPath);
+            const fileBytes = fs.readFileSync(selectedPath);
+            const contentHash = computeContentHash(fileBytes);
+            const settings = getSettings();
+
+            const realReq: ScanRequest = {
+              site: 'chatgpt',
+              kind: 'file',
+              source: 'app',
+              name: fileName,
+              data: fileBytes
+            };
+
+            const realVerdict = await scan(realReq, settings.markers);
+
+            let decision: Decision;
+            if (!realVerdict.found && !realVerdict.failed) {
+              decision = { action: 'allow', reason: 'clean' };
+              const cleanMsgOptions = {
+                type: 'info' as const,
+                title: 'File Clean',
+                message: 'No sensitive marker detected',
+                detail: `File: "${fileName}"\nScan time: ${realVerdict.ms} ms\nDecision: Approved (Clean)`,
+                buttons: ['OK']
+              };
+              if (win) {
+                await dialog.showMessageBox(win, cleanMsgOptions);
+              } else {
+                await dialog.showMessageBox(cleanMsgOptions);
+              }
+            } else {
+              decision = await showConfirmDialog(win, realReq, realVerdict);
+            }
+
+            logEvent({
+              ts: new Date(),
+              site: 'chatgpt',
+              kind: 'file',
+              source: 'app',
+              fileType: inferFileType(fileName),
+              fileName,
+              sizeBytes: fileBytes.length,
+              detected: realVerdict.found,
+              detectionSource: realVerdict.source || null,
+              decision: decision.reason,
+              scanMs: realVerdict.ms,
+              contentHash,
+              snippet: null
+            });
+
+            return decision;
+          }
+        } catch {
+          logger.warn('Interactive file pick cancelled or failed, falling back to simulated dialog');
+        }
+
+        // Fallback simulation for automated tests or cancel
         const fakeReq: ScanRequest = {
           site: 'chatgpt',
           kind: 'file',

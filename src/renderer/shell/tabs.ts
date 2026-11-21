@@ -69,29 +69,6 @@ export function initShell(): void {
       }
     });
   }
-
-  // Refresh status badge
-  async function refreshStatus(): Promise<void> {
-    try {
-      const api = (window as unknown as { dashboardApi?: { getAppStatus: () => Promise<{ dbStatus: 'up' | 'down'; guardActive: boolean }> } }).dashboardApi;
-      if (api?.getAppStatus) {
-        const status = await api.getAppStatus();
-        const dbStatusEl = document.querySelector<HTMLElement>('.db-status');
-        if (dbStatusEl) {
-          if (status.dbStatus === 'up') {
-            dbStatusEl.textContent = 'Postgres connected';
-            dbStatusEl.style.color = '#10b981';
-          } else {
-            dbStatusEl.textContent = 'In-Memory Fallback';
-            dbStatusEl.style.color = '#f59e0b';
-          }
-        }
-      }
-    } catch {}
-  }
-
-  refreshStatus();
-  setInterval(refreshStatus, 4000);
 }
 
 // Immediate execution or DOMContentLoaded

@@ -40,23 +40,7 @@ function escapeHtml(str: string): string {
 }
 
 async function loadStatus(): Promise<void> {
-  if (!win.dashboardApi) return;
-  try {
-    const status = await win.dashboardApi.getAppStatus();
-    const dot = document.getElementById('db-dot');
-    const text = document.getElementById('db-status-text');
-    if (status.dbStatus === 'up') {
-      dot?.classList.remove('disconnected');
-      dot?.classList.add('connected');
-      if (text) text.textContent = 'Postgres connected';
-    } else {
-      dot?.classList.remove('connected');
-      dot?.classList.add('disconnected');
-      if (text) text.textContent = 'Memory store (Postgres offline)';
-    }
-  } catch {
-    // ignore
-  }
+  // DB indicators removed from UI per design
 }
 
 async function loadEvents(): Promise<void> {
