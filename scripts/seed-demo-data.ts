@@ -11,25 +11,25 @@ export async function seedDemoData(targetCount = 300): Promise<void> {
   const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
   const sampleFileNames = [
-    'Q3-board-notes.pdf',
+    'meeting-notes.pdf',
     'screenshot-0412.png',
-    'scan-contract.pdf',
-    'export.txt',
-    'customer_list.csv',
-    'internal-memo.pdf',
+    'service-agreement.pdf',
+    'data-extract.txt',
+    'dataset-export.csv',
+    'team-briefing.pdf',
     'architecture-diagram.png',
-    'credentials_backup.txt',
-    'financials_q4.pdf'
+    'system-specification.txt',
+    'quarterly-overview.pdf'
   ];
 
   const sampleSnippets = [
-    'Summarise the attached notes in five bullets',
-    'Draft a short intro for our product update email.',
-    'Summarise the Q3 numbers WALLED_SENSITIVE budget by team and projected growth',
-    'Review the attached contract terms and flags',
+    'Summarize the attached meeting notes in five bullets',
+    'Draft a short intro for our product update announcement',
+    'Summarize department budget allocations and projected growth',
+    'Review the service agreement terms and operational clauses',
     'What are the key architectural trade-offs in this design?',
-    'Draft an email announcement regarding WALLED_SENSITIVE system migration',
-    'Analyze this error trace and provide a patch'
+    'Draft an email announcement regarding scheduled system maintenance',
+    'Analyze this error trace and suggest optimizations'
   ];
 
   const events: NewEvent[] = [];

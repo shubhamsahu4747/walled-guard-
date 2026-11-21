@@ -42,7 +42,7 @@ export function renderActivityChart(
           borderRadius: 3
         },
         {
-          label: 'Sensitive',
+          label: 'Protected',
           data: sensitiveData,
           backgroundColor: '#ef4444',
           borderRadius: 3
@@ -78,7 +78,7 @@ export function renderDecisionDonut(
   return new Chart(canvas, {
     type: 'doughnut',
     data: {
-      labels: ['Cancelled', 'Continued'],
+      labels: ['Blocked', 'Approved'],
       datasets: [
         {
           data: [cancelled || 1, overridden || 0],

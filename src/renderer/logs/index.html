@@ -12,7 +12,7 @@
     <div class="title-group">
       <h1>Security Audit Log</h1>
       <div class="subtitle">
-        <span id="total-count-badge">0 events recorded</span> · local tamper-evident audit ledger ·
+        <span id="total-count-badge">0 events recorded</span> · local secure audit ledger ·
         <span class="db-indicator">
           <span class="db-dot connected" id="db-dot"></span>
           <span id="db-status-text">Postgres connected</span>
@@ -60,10 +60,10 @@
         <label>Decision</label>
         <select class="table-select" id="filter-decision">
           <option value="">All Decisions</option>
-          <option value="cancelled">Cancelled (Blocked)</option>
-          <option value="continued">Continued (Allowed)</option>
-          <option value="clean">Clean (Sub-50ms)</option>
-          <option value="scan_failed">Scan Failed (Closed)</option>
+          <option value="cancelled">Blocked</option>
+          <option value="continued">Approved</option>
+          <option value="clean">Clean</option>
+          <option value="scan_failed">Scan failed</option>
         </select>
       </div>
 

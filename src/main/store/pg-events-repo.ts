@@ -37,6 +37,15 @@ export async function ensurePgSchema(pool: Pool): Promise<void> {
         CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts);
         CREATE INDEX IF NOT EXISTS idx_events_hash ON events (content_hash);
         CREATE INDEX IF NOT EXISTS idx_events_site_kind ON events (site, kind);
+
+        -- Sanitize sensitive sample names in existing seeded databases
+        UPDATE events SET file_name = 'system-specification.txt' WHERE file_name = 'credentials_backup.txt';
+        UPDATE events SET file_name = 'dataset-export.csv' WHERE file_name = 'customer_list.csv';
+        UPDATE events SET file_name = 'quarterly-overview.pdf' WHERE file_name = 'financials_q4.pdf';
+        UPDATE events SET file_name = 'service-agreement.pdf' WHERE file_name = 'scan-contract.pdf';
+        UPDATE events SET file_name = 'meeting-notes.pdf' WHERE file_name = 'Q3-board-notes.pdf';
+        UPDATE events SET file_name = 'team-briefing.pdf' WHERE file_name = 'internal-memo.pdf';
+        UPDATE events SET snippet = REPLACE(snippet, 'WALLED_SENSITIVE', '[PROTECTED]') WHERE snippet LIKE '%WALLED_SENSITIVE%';
       `);
     } finally {
       client.release();

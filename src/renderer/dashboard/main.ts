@@ -79,8 +79,8 @@ async function loadKPIs(): Promise<void> {
   const blockedPct = kpis.sensitiveDetections > 0
     ? Math.round((kpis.blockedCount / kpis.sensitiveDetections) * 100)
     : 0;
-  if (elBlockedSub) elBlockedSub.textContent = `${blockedPct}% of detections`;
-  if (elOverrideSub) elOverrideSub.textContent = `${kpis.overrideRatePercent}% override rate`;
+  if (elBlockedSub) elBlockedSub.textContent = `${blockedPct}% of matches`;
+  if (elOverrideSub) elOverrideSub.textContent = `${kpis.overrideRatePercent}% approval rate`;
 
   // Risk Gauge
   const elRiskNumber = document.getElementById('risk-number');
@@ -222,7 +222,7 @@ async function loadHeatmap(): Promise<void> {
       const count = cell ? cell.count : 0;
       const intensity = count > 0 ? 0.2 + 0.8 * (count / maxCount) : 0;
       const bg = count > 0 ? `rgba(239, 68, 68, ${intensity.toFixed(2)})` : '#f1f5f9';
-      html += `<div class="heatmap-cell" title="${days[day]} ${hour}:00 - ${count} detections" style="background: ${bg};"></div>`;
+      html += `<div class="heatmap-cell" title="${days[day]} ${hour}:00 - ${count} matches" style="background: ${bg};"></div>`;
     }
     html += `</div>`;
   }
@@ -233,7 +233,7 @@ async function loadHeatmap(): Promise<void> {
     const count = cell ? cell.count : 0;
     const intensity = count > 0 ? 0.2 + 0.8 * (count / maxCount) : 0;
     const bg = count > 0 ? `rgba(239, 68, 68, ${intensity.toFixed(2)})` : '#f1f5f9';
-    html += `<div class="heatmap-cell" title="Sun ${hour}:00 - ${count} detections" style="background: ${bg};"></div>`;
+    html += `<div class="heatmap-cell" title="Sun ${hour}:00 - ${count} matches" style="background: ${bg};"></div>`;
   }
   html += `</div>`;
 
@@ -271,9 +271,16 @@ async function loadEvents(): Promise<void> {
     .map((row: EventRow) => {
       const siteDisplay = row.site === 'chatgpt' ? 'ChatGPT' : 'Perplexity';
       const typeDisplay = row.kind === 'file' ? (row.fileType?.toUpperCase() || 'FILE') : 'Prompt';
-      const itemDisplay = row.kind === 'file' ? row.fileName || 'file' : `${row.snippet || 'Prompt'}, hash ${row.contentHash.slice(0, 6)}`;
+      const itemDisplay = row.kind === 'file'
+        ? (row.fileName || 'Uploaded file')
+        : `Text prompt (hash ${row.contentHash.slice(0, 6)})`;
       const foundDisplay = row.detectionSource || 'None';
       const decisionClass = row.decision;
+      const decisionDisplay = row.decision === 'cancelled'
+        ? 'blocked'
+        : row.decision === 'continued'
+          ? 'approved'
+          : row.decision;
 
       return `
       <tr>
@@ -282,7 +289,7 @@ async function loadEvents(): Promise<void> {
         <td>${typeDisplay}</td>
         <td>${itemDisplay}</td>
         <td>${foundDisplay}</td>
-        <td><span class="decision-pill ${decisionClass}">${row.decision}</span></td>
+        <td><span class="decision-pill ${decisionClass}">${decisionDisplay}</span></td>
         <td>${formatScanTime(row.scanMs)}</td>
       </tr>`;
     })

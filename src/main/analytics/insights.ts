@@ -29,7 +29,7 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
       {
         id: 'no-detections',
         type: 'success',
-        title: 'Zero sensitive data leaks detected',
+        title: 'Zero policy violations detected',
         description: 'All prompts and uploads scanned cleanly during this time period.'
       }
     ];
@@ -41,16 +41,16 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
     insights.push({
       id: 'site-chatgpt',
       type: 'danger',
-      title: 'Most detections come from ChatGPT',
-      description: `${chatgptDetections} of ${sensitiveDetections} detections (${pct}%) happened on ChatGPT, mostly prompts pasted from documents.`
+      title: 'Most policy matches from ChatGPT',
+      description: `${chatgptDetections} of ${sensitiveDetections} policy matches (${pct}%) occurred on ChatGPT.`
     });
   } else if (perplexityDetections > chatgptDetections && perplexityDetections > 0) {
     const pct = Math.round((perplexityDetections / sensitiveDetections) * 100);
     insights.push({
       id: 'site-perplexity',
       type: 'danger',
-      title: 'Most detections come from Perplexity',
-      description: `${perplexityDetections} of ${sensitiveDetections} detections (${pct}%) happened on Perplexity.`
+      title: 'Most policy matches from Perplexity',
+      description: `${perplexityDetections} of ${sensitiveDetections} policy matches (${pct}%) occurred on Perplexity.`
     });
   }
 
@@ -59,8 +59,8 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
     insights.push({
       id: 'override-rate-high',
       type: 'warning',
-      title: 'Override rate is elevated',
-      description: `${overrideRatePercent}% of detections were sent anyway via Continue.`
+      title: 'Approval rate is elevated',
+      description: `${overrideRatePercent}% of flagged items were approved via Continue.`
     });
   }
 
@@ -70,7 +70,7 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
       id: 'repeat-content',
       type: 'info',
       title: 'Repeat content detected',
-      description: `${repeatOffenderCount} items were flagged more than once. The same content hash was resubmitted.`
+      description: `${repeatOffenderCount} items were flagged more than once with identical content hashes.`
     });
   }
 
@@ -79,8 +79,8 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
     insights.push({
       id: 'ocr-detection',
       type: 'success',
-      title: 'OCR is catching hidden cases',
-      description: `${ocrDetectionsCount} detections came from images or scanned documents without a text layer.`
+      title: 'OCR inspection active',
+      description: `${ocrDetectionsCount} matches identified in images or documents without embedded text layers.`
     });
   }
 
@@ -90,8 +90,8 @@ export function generateInsights(data: InsightInputData): InsightItem[] {
     insights.push({
       id: 'peak-hour',
       type: 'info',
-      title: `Peak risk hour: ${formattedHour}`,
-      description: `Historical detections peak around ${formattedHour} during active work hours.`
+      title: `Peak activity hour: ${formattedHour}`,
+      description: `Historical policy matches peak around ${formattedHour} during standard working hours.`
     });
   }
 

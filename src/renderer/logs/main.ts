@@ -140,11 +140,16 @@ async function loadEvents(): Promise<void> {
         .map((row: EventRow) => {
           const siteDisplay = row.site === 'chatgpt' ? 'ChatGPT' : 'Perplexity';
           const typeDisplay = row.kind === 'file' ? (row.fileType?.toUpperCase() || 'FILE') : 'Prompt';
-          const rawItem = row.kind === 'file' ? (row.fileName || 'file') : (row.snippet || 'Prompt');
+          const rawItem = row.kind === 'file' ? (row.fileName || 'Uploaded file') : 'Text prompt';
           const itemDisplay = escapeHtml(rawItem);
           const hashShort = row.contentHash ? row.contentHash.slice(0, 10) : '—';
           const foundDisplay = escapeHtml(row.detectionSource || 'None');
           const decisionClass = row.decision;
+          const decisionDisplay = row.decision === 'cancelled'
+            ? 'blocked'
+            : row.decision === 'continued'
+              ? 'approved'
+              : row.decision;
 
           return `
           <tr>
@@ -154,7 +159,7 @@ async function loadEvents(): Promise<void> {
             <td style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${itemDisplay}">${itemDisplay}</td>
             <td><span class="hash-badge" title="${escapeHtml(row.contentHash || '')}">${hashShort}…</span></td>
             <td>${foundDisplay}</td>
-            <td><span class="decision-pill ${decisionClass}">${row.decision}</span></td>
+            <td><span class="decision-pill ${decisionClass}">${decisionDisplay}</span></td>
             <td style="font-family: monospace; font-size: 12px;">${formatScanTime(row.scanMs)}</td>
           </tr>`;
         })
