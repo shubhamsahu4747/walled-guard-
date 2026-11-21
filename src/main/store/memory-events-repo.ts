@@ -28,6 +28,7 @@ export function createMemoryEventsRepo(): EventsRepo {
       ts: e.ts || new Date(),
       site: e.site,
       kind: e.kind,
+      source: e.source || 'app',
       fileType: e.fileType || null,
       fileName: e.fileName || null,
       sizeBytes: e.sizeBytes || null,
@@ -47,6 +48,7 @@ export function createMemoryEventsRepo(): EventsRepo {
     if (q) {
       if (q.site) result = result.filter((r) => r.site === q.site);
       if (q.kind) result = result.filter((r) => r.kind === q.kind);
+      if (q.source) result = result.filter((r) => r.source === q.source);
       if (q.decision) result = result.filter((r) => r.decision === q.decision);
       if (q.search) {
         const query = q.search.toLowerCase();

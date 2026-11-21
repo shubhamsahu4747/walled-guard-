@@ -54,6 +54,7 @@ export function validateScanRequest(raw: unknown): { valid: true; data: ScanRequ
     data: {
       site: req.site,
       kind: req.kind,
+      source: req.source === 'browser' ? 'browser' : 'app',
       name: req.name as string | undefined,
       mime: req.mime as string | undefined,
       data: req.data as string | Uint8Array | ArrayBuffer

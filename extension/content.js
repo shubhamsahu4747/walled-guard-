@@ -281,8 +281,13 @@
     const text = getPromptText(e.target);
     if (!text) return;
 
-    // Fast-path: if text doesn't contain marker, allow immediate submission without delay
+    // Fast-path: if text doesn't contain marker, allow immediate submission and log clean event
     if (!text.includes('WALLED_SENSITIVE')) {
+      chrome.runtime.sendMessage({
+        action: 'LOG_CLEAN_PROMPT',
+        site: siteId,
+        text: text
+      });
       return;
     }
 
@@ -323,6 +328,11 @@
     if (!text) return;
 
     if (!text.includes('WALLED_SENSITIVE')) {
+      chrome.runtime.sendMessage({
+        action: 'LOG_CLEAN_PROMPT',
+        site: siteId,
+        text: text
+      });
       return;
     }
 
@@ -404,6 +414,24 @@
             e.target.dispatchEvent(dropEvent);
             isReplaying = false;
           }
+        }
+      });
+    });
+  }, true);
+
+  // Intercept File Picker Input changes
+  window.addEventListener('change', (e) => {
+    if (isReplaying) return;
+    const target = e.target;
+    if (!target || target.tagName !== 'INPUT' || target.type !== 'file') return;
+    const files = target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      scanFileWithNativeHost(file, (decision) => {
+        if (decision !== 'CONTINUE') {
+          target.value = ''; // Block and clear the input
+          showToast(`File upload "${file.name}" blocked by Walled Guard policy.`, true);
         }
       });
     });

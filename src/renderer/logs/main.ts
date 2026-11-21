@@ -63,6 +63,7 @@ async function loadEvents(): Promise<void> {
   if (!win.dashboardApi) return;
 
   const siteFilter = (document.getElementById('filter-site') as HTMLSelectElement)?.value;
+  const sourceFilter = (document.getElementById('filter-source') as HTMLSelectElement)?.value;
   const kindFilter = (document.getElementById('filter-kind') as HTMLSelectElement)?.value;
   const decisionFilter = (document.getElementById('filter-decision') as HTMLSelectElement)?.value;
   const searchQuery = (document.getElementById('filter-search') as HTMLInputElement)?.value;
@@ -77,6 +78,8 @@ async function loadEvents(): Promise<void> {
   const query: EventQuery = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     site: siteFilter ? (siteFilter as any) : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    source: sourceFilter ? (sourceFilter as any) : undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     kind: kindFilter ? (kindFilter as any) : undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,7 +106,7 @@ async function loadEvents(): Promise<void> {
 
     if (!page.items || page.items.length === 0) {
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 36px;">No audit events found matching filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 36px;">No audit events found matching filters.</td></tr>`;
       }
       if (paginationInfo) {
         paginationInfo.textContent = 'Showing 0 of 0 events';
@@ -139,6 +142,9 @@ async function loadEvents(): Promise<void> {
       tbody.innerHTML = page.items
         .map((row: EventRow) => {
           const siteDisplay = row.site === 'chatgpt' ? 'ChatGPT' : 'Perplexity';
+          const sourceDisplay = row.source === 'browser'
+            ? `<span class="source-pill browser">Browser</span>`
+            : `<span class="source-pill app">In-App</span>`;
           const typeDisplay = row.kind === 'file' ? (row.fileType?.toUpperCase() || 'FILE') : 'Prompt';
           const rawItem = row.kind === 'file' ? (row.fileName || 'Uploaded file') : 'Text prompt';
           const itemDisplay = escapeHtml(rawItem);
@@ -155,6 +161,7 @@ async function loadEvents(): Promise<void> {
           <tr>
             <td style="white-space: nowrap; color: var(--text-muted); font-size: 12px;">${formatDate(row.ts)}</td>
             <td style="font-weight: 500;">${siteDisplay}</td>
+            <td>${sourceDisplay}</td>
             <td><span style="font-size: 11px; font-weight: 600; color: #475569; background: #e2e8f0; padding: 2px 7px; border-radius: 4px;">${typeDisplay}</span></td>
             <td style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${itemDisplay}">${itemDisplay}</td>
             <td><span class="hash-badge" title="${escapeHtml(row.contentHash || '')}">${hashShort}…</span></td>
@@ -167,7 +174,7 @@ async function loadEvents(): Promise<void> {
     }
   } catch (err) {
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--red); padding: 24px;">Failed to load events: ${escapeHtml(String(err))}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--red); padding: 24px;">Failed to load events: ${escapeHtml(String(err))}</td></tr>`;
     }
   }
 }
@@ -220,7 +227,7 @@ async function triggerClearData(): Promise<void> {
 
 function initEventHandlers(): void {
   // Filter dropdowns
-  ['filter-site', 'filter-kind', 'filter-decision'].forEach((id) => {
+  ['filter-site', 'filter-source', 'filter-kind', 'filter-decision'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', () => {
       currentPage = 1;
       loadEvents();

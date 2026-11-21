@@ -172,6 +172,11 @@
         <option value="chatgpt">ChatGPT</option>
         <option value="perplexity">Perplexity</option>
       </select>
+      <select class="table-select" id="filter-source">
+        <option value="">All sources</option>
+        <option value="app">In-App</option>
+        <option value="browser">Browser</option>
+      </select>
       <select class="table-select" id="filter-kind">
         <option value="">Prompts and files</option>
         <option value="prompt">Prompts only</option>
@@ -193,6 +198,7 @@
           <tr>
             <th>Time</th>
             <th>Site</th>
+            <th>Source</th>
             <th>Type</th>
             <th>Item</th>
             <th>Found via</th>

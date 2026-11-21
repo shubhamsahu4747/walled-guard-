@@ -48,6 +48,15 @@
       </div>
 
       <div class="filter-field">
+        <label>Origin</label>
+        <select class="table-select" id="filter-source">
+          <option value="">All Origins</option>
+          <option value="app">In-App</option>
+          <option value="browser">Browser</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
         <label>Channel</label>
         <select class="table-select" id="filter-kind">
           <option value="">Prompts & Files</option>
@@ -92,6 +101,7 @@
           <tr>
             <th>Timestamp</th>
             <th>Site</th>
+            <th>Origin</th>
             <th>Channel</th>
             <th>Item / Filename</th>
             <th>Content Hash</th>
@@ -101,7 +111,7 @@
           </tr>
         </thead>
         <tbody id="events-tbody">
-          <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">Loading audit logs...</td></tr>
+          <tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 32px;">Loading audit logs...</td></tr>
         </tbody>
       </table>
     </div>

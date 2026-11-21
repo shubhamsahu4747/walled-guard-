@@ -88,6 +88,7 @@ export async function seedDemoData(targetCount = 300): Promise<void> {
       ts: date,
       site,
       kind,
+      source: Math.random() < 0.65 ? 'app' : 'browser',
       fileType,
       fileName,
       sizeBytes,

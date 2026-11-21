@@ -2,6 +2,8 @@ export type SiteId = 'chatgpt' | 'perplexity';
 
 export type ContentKind = 'prompt' | 'file';
 
+export type ClientSource = 'app' | 'browser';
+
 export type FileType = 'text' | 'pdf' | 'image';
 
 export type DetectionSource = 'plain-text' | 'text-layer' | 'ocr' | 'fuzzy';
@@ -13,6 +15,7 @@ export type DecisionReason = 'clean' | 'continued' | 'cancelled' | 'scan_failed'
 export interface ScanRequest {
   site: SiteId;
   kind: ContentKind;
+  source?: ClientSource;
   name?: string;
   mime?: string;
   data: string | Uint8Array | ArrayBuffer;
@@ -37,6 +40,7 @@ export interface GuardEvent {
   ts: Date;
   site: SiteId;
   kind: ContentKind;
+  source?: ClientSource | null;
   fileType?: FileType | null;
   fileName?: string | null;
   sizeBytes?: number | null;

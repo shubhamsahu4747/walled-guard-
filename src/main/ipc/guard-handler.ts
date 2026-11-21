@@ -69,6 +69,7 @@ export function registerGuardHandler(getParentWindow: () => BaseWindow | null): 
       ts: new Date(),
       site: req.site,
       kind: req.kind,
+      source: req.source || 'app',
       fileType: req.kind === 'file' ? inferFileType(req.name, req.mime) : null,
       fileName: req.kind === 'file' ? req.name || 'unnamed' : null,
       sizeBytes,

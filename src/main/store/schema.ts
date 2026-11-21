@@ -7,6 +7,7 @@ export const events = pgTable(
     ts: timestamp('ts', { withTimezone: true }).notNull().defaultNow(),
     site: text('site', { enum: ['chatgpt', 'perplexity'] }).notNull(),
     kind: text('kind', { enum: ['prompt', 'file'] }).notNull(),
+    source: text('source', { enum: ['app', 'browser'] }).notNull().default('app'),
     fileType: text('file_type', { enum: ['text', 'pdf', 'image'] }),
     fileName: text('file_name'),
     sizeBytes: integer('size_bytes'),
@@ -24,7 +25,8 @@ export const events = pgTable(
   (t) => [
     index('idx_events_ts').on(t.ts),
     index('idx_events_hash').on(t.contentHash),
-    index('idx_events_site_kind').on(t.site, t.kind)
+    index('idx_events_site_kind').on(t.site, t.kind),
+    index('idx_events_source').on(t.source)
   ]
 );
 

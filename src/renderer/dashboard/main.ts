@@ -243,6 +243,7 @@ async function loadHeatmap(): Promise<void> {
 async function loadEvents(): Promise<void> {
   if (!win.dashboardApi) return;
   const siteFilter = (document.getElementById('filter-site') as HTMLSelectElement)?.value;
+  const sourceFilter = (document.getElementById('filter-source') as HTMLSelectElement)?.value;
   const kindFilter = (document.getElementById('filter-kind') as HTMLSelectElement)?.value;
   const decisionFilter = (document.getElementById('filter-decision') as HTMLSelectElement)?.value;
   const searchQuery = (document.getElementById('filter-search') as HTMLInputElement)?.value;
@@ -250,6 +251,8 @@ async function loadEvents(): Promise<void> {
   const query: EventQuery = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     site: siteFilter ? (siteFilter as any) : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    source: sourceFilter ? (sourceFilter as any) : undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     kind: kindFilter ? (kindFilter as any) : undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -263,13 +266,16 @@ async function loadEvents(): Promise<void> {
   if (!tbody) return;
 
   if (page.items.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No events recorded matching criteria.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">No events recorded matching criteria.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = page.items
     .map((row: EventRow) => {
       const siteDisplay = row.site === 'chatgpt' ? 'ChatGPT' : 'Perplexity';
+      const sourceDisplay = row.source === 'browser'
+        ? `<span class="source-pill browser">Browser</span>`
+        : `<span class="source-pill app">In-App</span>`;
       const typeDisplay = row.kind === 'file' ? (row.fileType?.toUpperCase() || 'FILE') : 'Prompt';
       const itemDisplay = row.kind === 'file'
         ? (row.fileName || 'Uploaded file')
@@ -286,6 +292,7 @@ async function loadEvents(): Promise<void> {
       <tr>
         <td>${formatDate(row.ts)}</td>
         <td>${siteDisplay}</td>
+        <td>${sourceDisplay}</td>
         <td>${typeDisplay}</td>
         <td>${itemDisplay}</td>
         <td>${foundDisplay}</td>
@@ -321,7 +328,7 @@ function initEventHandlers(): void {
   });
 
   // Filters
-  ['filter-site', 'filter-kind', 'filter-decision'].forEach((id) => {
+  ['filter-site', 'filter-source', 'filter-kind', 'filter-decision'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', () => loadEvents());
   });
 

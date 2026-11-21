@@ -4,7 +4,7 @@
 const NATIVE_HOST_NAME = 'com.walledguard.native';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'SCAN_PROMPT' || message.action === 'SCAN_FILE') {
+  if (message.action === 'SCAN_PROMPT' || message.action === 'SCAN_FILE' || message.action === 'LOG_CLEAN_PROMPT') {
     try {
       chrome.runtime.sendNativeMessage(NATIVE_HOST_NAME, message, (response) => {
         if (chrome.runtime.lastError) {

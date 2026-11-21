@@ -24,6 +24,7 @@ export async function ensurePgSchema(pool: Pool): Promise<void> {
           ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
           site TEXT NOT NULL,
           kind TEXT NOT NULL,
+          source TEXT NOT NULL DEFAULT 'app',
           file_type TEXT,
           file_name TEXT,
           size_bytes INTEGER,
@@ -37,6 +38,8 @@ export async function ensurePgSchema(pool: Pool): Promise<void> {
         CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts);
         CREATE INDEX IF NOT EXISTS idx_events_hash ON events (content_hash);
         CREATE INDEX IF NOT EXISTS idx_events_site_kind ON events (site, kind);
+        ALTER TABLE events ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'app';
+        CREATE INDEX IF NOT EXISTS idx_events_source ON events (source);
 
         -- Sanitize sensitive sample names in existing seeded databases
         UPDATE events SET file_name = 'system-specification.txt' WHERE file_name = 'credentials_backup.txt';
@@ -87,6 +90,7 @@ export function createPgEventsRepo(connectionString: string): EventsRepo {
 
     if (q?.site) conditions.push(eq(events.site, q.site));
     if (q?.kind) conditions.push(eq(events.kind, q.kind));
+    if (q?.source) conditions.push(eq(events.source, q.source));
     if (q?.decision) conditions.push(eq(events.decision, q.decision));
     if (q?.startDate) conditions.push(gte(events.ts, q.startDate));
     if (q?.endDate) conditions.push(lte(events.ts, q.endDate));

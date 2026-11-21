@@ -10,6 +10,7 @@ import {
 export interface EventQuery {
   site?: 'chatgpt' | 'perplexity';
   kind?: 'prompt' | 'file';
+  source?: 'app' | 'browser';
   decision?: 'clean' | 'continued' | 'cancelled' | 'scan_failed';
   search?: string;
   startDate?: Date;
