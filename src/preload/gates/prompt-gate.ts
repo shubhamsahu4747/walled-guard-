@@ -5,27 +5,67 @@ import { globalGateState } from './gate-state';
 function isEditorElement(el: Element | null, adapter: SiteAdapter): boolean {
   if (!el) return false;
   for (const sel of adapter.selectors.editor) {
-    if (el.matches(sel) || el.closest(sel)) {
-      return true;
-    }
+    try {
+      if (el.matches(sel) || el.closest(sel)) {
+        return true;
+      }
+    } catch {}
   }
-  if (el instanceof HTMLTextAreaElement || (el instanceof HTMLElement && el.isContentEditable)) {
+  if (
+    el instanceof HTMLTextAreaElement ||
+    (el instanceof HTMLElement && el.isContentEditable) ||
+    el.closest('[contenteditable="true"]') ||
+    el.closest('textarea') ||
+    el.closest('[role="textbox"]')
+  ) {
     return true;
   }
   return false;
 }
 
-function findSendButton(adapter: SiteAdapter): HTMLButtonElement | null {
-  for (const sel of adapter.selectors.sendButton) {
-    const el = document.querySelector(sel);
-    if (el instanceof HTMLButtonElement) {
-      return el;
+function findSendButton(adapter: SiteAdapter, target?: Element | null): HTMLElement | null {
+  if (target) {
+    for (const sel of adapter.selectors.sendButton) {
+      try {
+        const match = target.matches(sel) ? target : target.closest(sel);
+        if (match instanceof HTMLElement) return match;
+      } catch {}
     }
-    const buttonInside = el?.closest('button') || el?.querySelector('button');
-    if (buttonInside instanceof HTMLButtonElement) {
-      return buttonInside;
+    const closestBtn = target.closest('button');
+    if (closestBtn) return closestBtn;
+  }
+
+  for (const sel of adapter.selectors.sendButton) {
+    try {
+      const el = document.querySelector(sel);
+      if (el instanceof HTMLElement) {
+        return el;
+      }
+      const buttonInside = el?.closest('button') || el?.querySelector('button');
+      if (buttonInside instanceof HTMLElement) {
+        return buttonInside;
+      }
+    } catch {}
+  }
+
+  // Fallback: search all buttons on page
+  const buttons = document.querySelectorAll('button');
+  for (let i = 0; i < buttons.length; i++) {
+    const btn = buttons[i];
+    const testId = (btn.getAttribute('data-testid') || '').toLowerCase();
+    const ariaLabel = (btn.getAttribute('aria-label') || '').toLowerCase();
+    const type = (btn.getAttribute('type') || '').toLowerCase();
+    if (
+      testId.includes('send') ||
+      testId.includes('submit') ||
+      ariaLabel.includes('send') ||
+      ariaLabel.includes('submit') ||
+      type === 'submit'
+    ) {
+      return btn;
     }
   }
+
   return null;
 }
 
@@ -50,18 +90,19 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
         return;
       }
 
+      const promptText = adapter.getPromptText(document, target);
+      if (!promptText || !promptText.trim()) {
+        return;
+      }
+
       // Intercept and Hold
       event.preventDefault();
       event.stopImmediatePropagation();
       globalGateState.setStatus('HELD');
-
-      const promptText = adapter.getPromptText(document);
-      if (!promptText.trim()) {
-        globalGateState.setStatus('IDLE');
-        return;
-      }
-
       globalGateState.setStatus('AWAITING');
+
+      console.info(`[WalledGuard Preload] Intercepting prompt via Enter key (${promptText.length} chars)`);
+
       const decision = await bridge.scan({
         site: adapter.id,
         kind: 'prompt',
@@ -72,7 +113,7 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
         globalGateState.setStatus('RELEASED');
         // Replay via send button click or synthetic Enter
         const sendBtn = findSendButton(adapter);
-        if (sendBtn && !sendBtn.disabled) {
+        if (sendBtn && !sendBtn.hasAttribute('disabled')) {
           globalGateState.markBypassed(sendBtn);
           sendBtn.click();
         } else if (target) {
@@ -108,17 +149,13 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
         return;
       }
 
-      // Check if target is or is inside a send button
-      let matchedButton: HTMLElement | null = null;
-      for (const sel of adapter.selectors.sendButton) {
-        const match = target.matches(sel) ? target : target.closest(sel);
-        if (match instanceof HTMLElement) {
-          matchedButton = match;
-          break;
-        }
+      const matchedButton = findSendButton(adapter, target);
+      if (!matchedButton) {
+        return;
       }
 
-      if (!matchedButton) {
+      const promptText = adapter.getPromptText(document, document.activeElement || target);
+      if (!promptText || !promptText.trim()) {
         return;
       }
 
@@ -126,14 +163,10 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
       event.preventDefault();
       event.stopImmediatePropagation();
       globalGateState.setStatus('HELD');
-
-      const promptText = adapter.getPromptText(document);
-      if (!promptText.trim()) {
-        globalGateState.setStatus('IDLE');
-        return;
-      }
-
       globalGateState.setStatus('AWAITING');
+
+      console.info(`[WalledGuard Preload] Intercepting prompt via Send button (${promptText.length} chars)`);
+
       const decision = await bridge.scan({
         site: adapter.id,
         kind: 'prompt',

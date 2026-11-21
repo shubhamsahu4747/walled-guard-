@@ -100,9 +100,18 @@ export async function showConfirmDialog(
   const options = buildDialogOptions(req, verdict);
   logger.info(`Opening native dialog for [${req.kind}] on [${req.site}]`);
 
-  const result = parentWindow
-    ? await dialog.showMessageBox(parentWindow, options)
-    : await dialog.showMessageBox(options);
+  let result: Electron.MessageBoxReturnValue;
+  try {
+    if (parentWindow && !parentWindow.isDestroyed()) {
+      parentWindow.focus();
+      result = await dialog.showMessageBox(parentWindow, options);
+    } else {
+      result = await dialog.showMessageBox(options);
+    }
+  } catch (dialogErr) {
+    logger.warn('dialog.showMessageBox with parent window failed; falling back to top-level dialog:', dialogErr);
+    result = await dialog.showMessageBox(options);
+  }
 
   if (result.response === 0) {
     logger.info(`User clicked CONTINUE for [${req.kind}] on [${req.site}]`);

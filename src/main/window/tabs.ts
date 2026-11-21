@@ -70,6 +70,9 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     }
   });
   chatgptView.webContents.setUserAgent(DEFAULT_USER_AGENT);
+  chatgptView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[ChatGPT Web] ${msg}`);
+  });
   chatgptView.webContents.loadURL('https://chatgpt.com');
   configureTabSecurity(chatgptView);
 
@@ -92,6 +95,9 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     }
   });
   perplexityView.webContents.setUserAgent(DEFAULT_USER_AGENT);
+  perplexityView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[Perplexity Web] ${msg}`);
+  });
   perplexityView.webContents.loadURL('https://www.perplexity.ai');
   configureTabSecurity(perplexityView);
 

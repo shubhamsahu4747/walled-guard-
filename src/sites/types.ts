@@ -13,6 +13,6 @@ export interface SiteAdapter {
   name: string;
   hosts: string[];
   selectors: SiteSelectors;
-  getPromptText: (root?: Document | Element) => string;
+  getPromptText: (root?: Document | Element | ParentNode, target?: Element | null) => string;
   responseCss: (color: string) => string;
 }

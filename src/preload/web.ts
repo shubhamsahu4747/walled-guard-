@@ -7,11 +7,25 @@ import { logger } from '../shared/logger';
 // 1. Expose safe typed bridge to web page
 contextBridge.exposeInMainWorld('walledGuard', guardBridge);
 
-// 2. Identify site adapter based on current location
-const adapter = findAdapterByHostname(window.location.hostname);
-if (adapter) {
-  logger.info(`Activating Walled Guard for ${adapter.name} (${window.location.hostname})`);
-  initGates(adapter, guardBridge);
-} else {
-  logger.debug(`No matching site adapter for hostname: ${window.location.hostname}`);
+// 2. Identify site adapter based on current location and attach gates reliably
+let gatesInitialized = false;
+
+function tryInit(): void {
+  if (gatesInitialized) return;
+  const host = window.location.hostname;
+  if (!host) return;
+
+  const adapter = findAdapterByHostname(host);
+  if (adapter) {
+    gatesInitialized = true;
+    logger.info(`Activating Walled Guard for ${adapter.name} (${host})`);
+    initGates(adapter, guardBridge);
+  }
+}
+
+tryInit();
+
+if (!gatesInitialized) {
+  window.addEventListener('DOMContentLoaded', tryInit);
+  window.addEventListener('load', tryInit);
 }
