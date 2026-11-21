@@ -24,6 +24,13 @@
     "perplexity",
     "security"
   ],
+  "build": {
+    "appId": "com.walledguard.app",
+    "productName": "Walled Guard",
+    "win": {
+      "icon": "resources/icon.ico"
+    }
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {

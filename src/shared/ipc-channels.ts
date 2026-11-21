@@ -21,7 +21,11 @@ export const IPC_CHANNELS = {
 
   // System
   APP_STATUS: 'app:status',
-  NAVIGATE_TAB: 'app:navigate-tab'
+  NAVIGATE_TAB: 'app:navigate-tab',
+
+  // Sidebar
+  SIDEBAR_TOGGLE: 'sidebar:toggle',
+  SIDEBAR_GET_STATE: 'sidebar:get-state'
 } as const;
 
 export type IpcChannel = typeof IPC_CHANNELS[keyof typeof IPC_CHANNELS];

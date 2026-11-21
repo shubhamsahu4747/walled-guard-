@@ -13,6 +13,7 @@ export interface TabManager {
   switchTab: (id: TabId) => void;
   getActiveTab: () => TabId;
   updateBounds: () => void;
+  setSidebarWidth: (width: number) => void;
   getViews: () => Record<TabId, WebContentsView>;
   updateResponseColor: (color: string) => Promise<void>;
 }
@@ -164,15 +165,21 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     settings: settingsView
   };
 
+  let currentSidebarWidth = 240;
+
   function getTabBounds(): { x: number; y: number; width: number; height: number } {
     const [width, height] = parentWindow.getContentSize();
-    const sidebarWidth = 240;
     return {
-      x: sidebarWidth,
+      x: currentSidebarWidth,
       y: 0,
-      width: Math.max(0, width - sidebarWidth),
+      width: Math.max(0, width - currentSidebarWidth),
       height
     };
+  }
+
+  function setSidebarWidth(width: number): void {
+    currentSidebarWidth = width;
+    updateBounds();
   }
 
   function updateBounds(): void {
@@ -246,6 +253,7 @@ export function createTabManager(parentWindow: BaseWindow, onTabChange?: (id: Ta
     switchTab,
     getActiveTab: () => activeTab,
     updateBounds,
+    setSidebarWidth,
     getViews: () => views,
     updateResponseColor
   };

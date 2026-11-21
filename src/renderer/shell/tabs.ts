@@ -24,6 +24,19 @@ export function initShell(): void {
     });
   }
 
+  // Sidebar Toggle (Hide / Unhide)
+  const btnToggleSidebar = document.getElementById('sidebar-toggle-btn');
+  if (btnToggleSidebar) {
+    btnToggleSidebar.addEventListener('click', async () => {
+      const api = (window as unknown as { dashboardApi?: { toggleSidebar: () => Promise<boolean> } }).dashboardApi;
+      if (api?.toggleSidebar) {
+        const isCollapsed = await api.toggleSidebar();
+        document.body.classList.toggle('collapsed', isCollapsed);
+        btnToggleSidebar.setAttribute('title', isCollapsed ? 'Unhide sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)');
+      }
+    });
+  }
+
   // Quick action: Export CSV
   const btnExportCsv = document.getElementById('btn-export-csv');
   if (btnExportCsv) {

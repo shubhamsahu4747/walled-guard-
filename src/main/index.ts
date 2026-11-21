@@ -15,6 +15,10 @@ let appWindow: AppWindow | null = null;
 async function bootstrap(): Promise<void> {
   logger.info('Bootstrapping Walled Guard application...');
 
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.walledguard.app');
+  }
+
   const ses = configureWebSession();
   configureUploadGuard(ses);
 
@@ -39,6 +43,18 @@ async function bootstrap(): Promise<void> {
     } else {
       logger.warn('[Main Process] appWindow is null on tab switch request');
     }
+  });
+
+  // Handle sidebar collapse/expand requests
+  ipcMain.handle(IPC_CHANNELS.SIDEBAR_TOGGLE, () => {
+    if (appWindow) {
+      return appWindow.toggleSidebar();
+    }
+    return false;
+  });
+
+  ipcMain.handle(IPC_CHANNELS.SIDEBAR_GET_STATE, () => {
+    return { collapsed: appWindow ? appWindow.isSidebarCollapsed() : false };
   });
 
   // Auto-purge events older than retention setting on startup (F4)

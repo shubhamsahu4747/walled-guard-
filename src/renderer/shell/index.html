@@ -8,16 +8,22 @@
     :root {
       --bg-sidebar: #f8fafc;
       --border-color: #e2e8f0;
-      --text-primary: #1e293b;
+      --text-primary: #0f172a;
       --text-muted: #64748b;
-      --accent: #0f172a;
-      --accent-active: #0ea5e9;
-      --active-bg: #e2e8f0;
-      --green: #10b981;
+      --text-dim: #94a3b8;
+      --accent-green: #10b981;
+      --accent-green-dark: #059669;
+      --accent-green-bg: #ecfdf5;
+      --active-indicator: #10b981;
+      --hover-bg: #f1f5f9;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg-sidebar);
       color: var(--text-primary);
       height: 100vh;
@@ -25,78 +31,433 @@
       flex-direction: column;
       border-right: 1px solid var(--border-color);
       user-select: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+      transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .brand {
-      padding: 20px 16px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .brand svg { width: 20px; height: 20px; color: var(--green); }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      padding: 16px 16px 8px;
-    }
-    .nav-list { list-style: none; padding: 0 8px; }
-    .nav-item {
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+    /* Header & Brand */
+    .sidebar-header {
+      padding: 16px 14px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-      color: var(--text-primary);
-      transition: background 0.15s ease;
-      margin-bottom: 2px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+      background: #ffffff;
+      min-height: 56px;
     }
-    .nav-item:hover { background: #f1f5f9; }
-    .nav-item.active { background: var(--active-bg); font-weight: 600; }
-    .nav-label { display: flex; align-items: center; gap: 10px; }
-    .nav-label svg { width: 18px; height: 18px; opacity: 0.8; }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .brand-icon-wrapper {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+      flex-shrink: 0;
+    }
+
+    .brand-icon-wrapper svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .brand-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 14.5px;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Toggle Button (Hide / Unhide) */
+    .toggle-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      outline: none;
+    }
+
+    .toggle-btn:hover {
+      background: var(--hover-bg);
+      color: var(--text-primary);
+      border-color: #cbd5e1;
+      transform: scale(1.04);
+    }
+
+    .toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .toggle-btn .icon-expand { display: none; }
+    .toggle-btn .icon-collapse { display: block; }
+
+    /* Section titles */
+    .section-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      padding: 14px 14px 6px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    /* Nav Items */
+    .nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--hover-bg);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--accent-green-bg);
+      color: var(--accent-green-dark);
+      font-weight: 600;
+      border-left-color: var(--active-indicator);
+    }
+
+    .nav-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: #64748b;
+      transition: color 0.15s ease;
+    }
+
+    .nav-item:hover .nav-icon {
+      color: var(--text-primary);
+    }
+
+    .nav-item.active .nav-icon {
+      color: var(--accent-green-dark);
+    }
+
+    .nav-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Badge */
     .badge {
       background: #ef4444;
-      color: #fff;
+      color: #ffffff;
       font-size: 11px;
       font-weight: 700;
       border-radius: 10px;
-      padding: 2px 7px;
+      padding: 1px 6px;
+      line-height: 1.4;
+      box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
     }
+
+    /* Danger action */
+    .nav-item.danger {
+      color: #dc2626;
+    }
+    .nav-item.danger .nav-icon {
+      color: #dc2626;
+    }
+    .nav-item.danger:hover {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 10px 12px;
+    }
+
+    /* Footer Status Card */
     .footer {
       margin-top: auto;
-      padding: 16px;
-    }
-    .status-card {
-      background: #f1f5f9;
-      border-radius: 8px;
       padding: 12px;
-      font-size: 12px;
     }
+
+    .status-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
     .status-header {
       display: flex;
       align-items: center;
       gap: 6px;
       font-weight: 600;
-      color: var(--green);
-      margin-bottom: 4px;
+      color: #0f172a;
+      margin-bottom: 2px;
     }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
-    .status-desc { color: var(--text-muted); font-size: 11px; line-height: 1.4; }
-    .db-status { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
+
+    .dot-pulse-wrapper {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      display: inline-block;
+    }
+
+    .dot-ping {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      opacity: 0.3;
+      animation: pulse 2s infinite ease-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.6); opacity: 0.6; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .status-desc {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    /* =========================================================================
+       COLLAPSED STATE (64px width)
+       ========================================================================= */
+    body.collapsed {
+      width: 64px;
+    }
+
+    body.collapsed .sidebar-header {
+      padding: 12px 6px;
+      justify-content: center;
+    }
+
+    body.collapsed .brand-info {
+      display: none;
+    }
+
+    body.collapsed .brand-group {
+      display: none;
+    }
+
+    body.collapsed .toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: var(--text-primary);
+    }
+
+    body.collapsed .toggle-btn .icon-collapse { display: none; }
+    body.collapsed .toggle-btn .icon-expand { display: block; }
+
+    body.collapsed .section-title {
+      display: none;
+    }
+
+    body.collapsed .divider {
+      margin: 8px 6px;
+    }
+
+    body.collapsed .nav-list {
+      padding: 0 6px;
+    }
+
+    body.collapsed .nav-item {
+      justify-content: center;
+      padding: 10px 0;
+      border-left: none;
+      border-radius: 8px;
+    }
+
+    body.collapsed .nav-item.active {
+      background: var(--accent-green-bg);
+      border-left: none;
+      position: relative;
+    }
+
+    body.collapsed .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      background: var(--accent-green);
+      border-radius: 2px;
+    }
+
+    body.collapsed .nav-text {
+      display: none;
+    }
+
+    body.collapsed .badge {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      padding: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      text-indent: -9999px;
+      overflow: hidden;
+      box-shadow: 0 0 0 2px #ffffff;
+    }
+
+    body.collapsed .footer {
+      padding: 10px 6px;
+      display: flex;
+      justify-content: center;
+    }
+
+    body.collapsed .status-card {
+      padding: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    body.collapsed .status-header span:not(.dot-pulse-wrapper) {
+      display: none;
+    }
+
+    body.collapsed .status-desc {
+      display: none;
+    }
+
+    /* Floating Tooltip in Collapsed Mode */
+    .tooltip-anchor {
+      position: relative;
+    }
+
+    body.collapsed .nav-item::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 58px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 999;
+    }
+
+    body.collapsed .nav-item:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) translateX(2px);
+    }
   </style>
 
   <script>
+    // Tab switching
     window.__selectTab = function(tab) {
       try {
         console.log('[Shell UI] __selectTab called for:', tab);
         if (!tab) return;
 
-        // 1. Update UI highlight immediately
         var allItems = document.querySelectorAll('#workspace-nav .nav-item');
         allItems.forEach(function(el) {
           el.classList.remove('active');
@@ -106,11 +467,9 @@
           activeEl.classList.add('active');
         }
 
-        // 2. Dispatch IPC to main process
         if (window.dashboardApi && typeof window.dashboardApi.navigateTab === 'function') {
           window.dashboardApi.navigateTab(tab);
         } else {
-          console.warn('[Shell UI] dashboardApi not ready yet, waiting...');
           setTimeout(function() {
             if (window.dashboardApi && typeof window.dashboardApi.navigateTab === 'function') {
               window.dashboardApi.navigateTab(tab);
@@ -122,6 +481,23 @@
       }
     };
 
+    // Toggle Sidebar hide / unhide
+    window.__toggleSidebar = async function() {
+      try {
+        if (window.dashboardApi && typeof window.dashboardApi.toggleSidebar === 'function') {
+          var isCollapsed = await window.dashboardApi.toggleSidebar();
+          document.body.classList.toggle('collapsed', isCollapsed);
+          var btn = document.getElementById('sidebar-toggle-btn');
+          if (btn) {
+            btn.title = isCollapsed ? 'Unhide sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)';
+          }
+        }
+      } catch (err) {
+        console.error('[Shell UI] Error toggling sidebar:', err);
+      }
+    };
+
+    // Quick Actions
     window.__exportCsv = async function() {
       if (window.dashboardApi && window.dashboardApi.exportEvents) {
         try {
@@ -154,22 +530,6 @@
     };
 
     async function pollStatus() {
-      if (window.dashboardApi && window.dashboardApi.getAppStatus) {
-        try {
-          var status = await window.dashboardApi.getAppStatus();
-          var el = document.querySelector('.db-status');
-          if (el) {
-            if (status.dbStatus === 'up') {
-              el.textContent = 'Postgres connected';
-              el.style.color = '#10b981';
-            } else {
-              el.textContent = 'In-Memory Fallback';
-              el.style.color = '#f59e0b';
-            }
-          }
-        } catch (e) {}
-      }
-
       if (window.dashboardApi && window.dashboardApi.getKPIs) {
         try {
           var kpis = await window.dashboardApi.getKPIs('30d');
@@ -186,6 +546,7 @@
       }
     }
 
+    // Listeners for external tab switch & sidebar toggle events
     if (window.dashboardApi && window.dashboardApi.onTabSwitched) {
       window.dashboardApi.onTabSwitched(function(tab) {
         var allItems = document.querySelectorAll('#workspace-nav .nav-item');
@@ -195,100 +556,168 @@
       });
     }
 
+    if (window.dashboardApi && window.dashboardApi.onSidebarToggled) {
+      window.dashboardApi.onSidebarToggled(function(isCollapsed) {
+        document.body.classList.toggle('collapsed', isCollapsed);
+        var btn = document.getElementById('sidebar-toggle-btn');
+        if (btn) {
+          btn.title = isCollapsed ? 'Unhide sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)';
+        }
+      });
+    }
+
+    // Initialize sidebar state on load
+    window.addEventListener('DOMContentLoaded', async function() {
+      if (window.dashboardApi && window.dashboardApi.getSidebarState) {
+        try {
+          var state = await window.dashboardApi.getSidebarState();
+          if (state && state.collapsed) {
+            document.body.classList.add('collapsed');
+            var btn = document.getElementById('sidebar-toggle-btn');
+            if (btn) btn.title = 'Unhide sidebar (Ctrl+B)';
+          }
+        } catch (e) {}
+      }
+    });
+
+    // Global shortcut Ctrl+B / Cmd+B inside the sidebar view
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        window.__toggleSidebar();
+      }
+    });
+
     setInterval(pollStatus, 3000);
     setTimeout(pollStatus, 500);
   </script>
 </head>
 <body>
-  <div class="brand">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-    Walled Guard
+  <!-- Header with Brand and Hide/Unhide Button -->
+  <div class="sidebar-header">
+    <div class="brand-group">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <div class="brand-title">
+          Walled Guard
+          <span class="brand-badge">ACTIVE</span>
+        </div>
+        <div class="brand-subtitle">AI DLP Sentinel</div>
+      </div>
+    </div>
+
+    <!-- Toggle Collapse / Expand Button -->
+    <button id="sidebar-toggle-btn" class="toggle-btn" onclick="window.__toggleSidebar()" title="Hide sidebar (Ctrl+B)" aria-label="Toggle sidebar">
+      <!-- Collapse Icon (shows when expanded) -->
+      <svg class="icon-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+        <path d="M14 9l-3 3 3 3"/>
+      </svg>
+      <!-- Expand Icon (shows when collapsed) -->
+      <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+        <path d="M12 9l3 3-3 3"/>
+      </svg>
+    </button>
   </div>
 
+  <!-- Workspace Nav -->
   <div class="section-title">WORKSPACE</div>
   <ul class="nav-list" id="workspace-nav">
-    <li class="nav-item active" data-tab="dashboard" onclick="window.__selectTab('dashboard')">
+    <li class="nav-item active" data-tab="dashboard" data-tooltip="Dashboard" onclick="window.__selectTab('dashboard')">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
         </svg>
-        Dashboard
+        <span class="nav-text">Dashboard</span>
       </div>
     </li>
-    <li class="nav-item" data-tab="chatgpt" onclick="window.__selectTab('chatgpt')">
+    <li class="nav-item" data-tab="chatgpt" data-tooltip="ChatGPT" onclick="window.__selectTab('chatgpt')">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        ChatGPT
+        <span class="nav-text">ChatGPT</span>
       </div>
     </li>
-    <li class="nav-item" data-tab="perplexity" onclick="window.__selectTab('perplexity')">
+    <li class="nav-item" data-tab="perplexity" data-tooltip="Perplexity" onclick="window.__selectTab('perplexity')">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
         </svg>
-        Perplexity
+        <span class="nav-text">Perplexity</span>
       </div>
     </li>
-    <li class="nav-item" data-tab="logs" onclick="window.__selectTab('logs')">
+    <li class="nav-item" data-tab="logs" data-tooltip="Audit Log" onclick="window.__selectTab('logs')">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <line x1="16" y1="13" x2="8" y2="13"/>
           <line x1="16" y1="17" x2="8" y2="17"/>
           <polyline points="10 9 9 9 8 9"/>
         </svg>
-        Audit Log
+        <span class="nav-text">Audit Log</span>
       </div>
-      <span class="badge" id="badge-count">3</span>
+      <span class="badge" id="badge-count" style="display: none;">0</span>
     </li>
-    <li class="nav-item" data-tab="settings" onclick="window.__selectTab('settings')">
+    <li class="nav-item" data-tab="settings" data-tooltip="Settings" onclick="window.__selectTab('settings')">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
         </svg>
-        Settings
+        <span class="nav-text">Settings</span>
       </div>
     </li>
   </ul>
 
+  <div class="divider"></div>
+
+  <!-- Quick Actions Nav -->
   <div class="section-title">QUICK ACTIONS</div>
   <ul class="nav-list">
-    <li class="nav-item" id="btn-scan-file" onclick="window.__scanFileDebug()">
+    <li class="nav-item" id="btn-scan-file" data-tooltip="Scan a file" onclick="window.__scanFileDebug()">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><circle cx="11" cy="14" r="3"/><line x1="13.5" y1="16.5" x2="16" y2="19"/>
         </svg>
-        Scan a file
+        <span class="nav-text">Scan a file</span>
       </div>
     </li>
-    <li class="nav-item" id="btn-export-csv" onclick="window.__exportCsv()">
+    <li class="nav-item" id="btn-export-csv" data-tooltip="Export CSV" onclick="window.__exportCsv()">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
-        Export CSV
+        <span class="nav-text">Export CSV</span>
       </div>
     </li>
-    <li class="nav-item" id="btn-clear-data" style="color: #ef4444;" onclick="window.__clearData()">
+    <li class="nav-item danger" id="btn-clear-data" data-tooltip="Clear data" onclick="window.__clearData()">
       <div class="nav-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
         </svg>
-        Clear data
+        <span class="nav-text">Clear data</span>
       </div>
     </li>
   </ul>
 
+  <!-- Status Card Footer -->
   <div class="footer">
-    <div class="status-card">
+    <div class="status-card" title="Guard Active · All AI upload channels intercepted and protected">
       <div class="status-header">
-        <span class="dot"></span> Guard active
+        <div class="dot-pulse-wrapper">
+          <span class="dot-ping"></span>
+          <span class="dot"></span>
+        </div>
+        <span>Guard Active</span>
       </div>
-      <div class="status-desc">ChatGPT and Perplexity are protected</div>
+      <div class="status-desc">ChatGPT &amp; Perplexity protected</div>
     </div>
   </div>
 </body>

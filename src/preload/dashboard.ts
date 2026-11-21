@@ -26,6 +26,9 @@ export interface DashboardAPI {
   navigateTab: (tab: string) => void;
   onTabSwitched: (cb: (tab: string) => void) => void;
   triggerDebugDialog: (variant: 'prompt' | 'file' | 'failed') => Promise<unknown>;
+  toggleSidebar: () => Promise<boolean>;
+  getSidebarState: () => Promise<{ collapsed: boolean }>;
+  onSidebarToggled: (cb: (collapsed: boolean) => void) => void;
 }
 
 export const dashboardApi: DashboardAPI = {
@@ -46,7 +49,12 @@ export const dashboardApi: DashboardAPI = {
     ipcRenderer.on('tab-switched', (_event, tab) => cb(tab));
   },
   triggerDebugDialog: (variant: 'prompt' | 'file' | 'failed') =>
-    ipcRenderer.invoke(IPC_CHANNELS.GUARD_DEBUG_DIALOG, variant)
+    ipcRenderer.invoke(IPC_CHANNELS.GUARD_DEBUG_DIALOG, variant),
+  toggleSidebar: () => ipcRenderer.invoke(IPC_CHANNELS.SIDEBAR_TOGGLE),
+  getSidebarState: () => ipcRenderer.invoke(IPC_CHANNELS.SIDEBAR_GET_STATE),
+  onSidebarToggled: (cb: (collapsed: boolean) => void) => {
+    ipcRenderer.on('sidebar-toggled', (_event, collapsed) => cb(collapsed));
+  }
 };
 
 contextBridge.exposeInMainWorld('dashboardApi', dashboardApi);
