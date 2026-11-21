@@ -21,10 +21,15 @@ export function createMainWindow(): AppWindow {
   const sidebarView = new WebContentsView({
     webPreferences: {
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
+      webSecurity: false,
       nodeIntegration: false,
       preload: path.join(__dirname, '../preload/dashboard.js')
     }
+  });
+
+  sidebarView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[Sidebar Console] ${msg}`);
   });
 
   const shellHtml = path.join(__dirname, '../renderer/shell/index.html');

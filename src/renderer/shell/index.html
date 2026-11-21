@@ -87,8 +87,93 @@
     }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
     .status-desc { color: var(--text-muted); font-size: 11px; line-height: 1.4; }
-    .db-status { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .db-status { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
   </style>
+
+  <script>
+    window.__selectTab = function(tab) {
+      try {
+        console.log('[Shell UI] __selectTab called for:', tab);
+        if (!tab) return;
+
+        // 1. Update UI highlight immediately
+        var allItems = document.querySelectorAll('#workspace-nav .nav-item');
+        allItems.forEach(function(el) {
+          el.classList.remove('active');
+        });
+        var activeEl = document.querySelector('#workspace-nav .nav-item[data-tab="' + tab + '"]');
+        if (activeEl) {
+          activeEl.classList.add('active');
+        }
+
+        // 2. Dispatch IPC to main process
+        if (window.dashboardApi && typeof window.dashboardApi.navigateTab === 'function') {
+          window.dashboardApi.navigateTab(tab);
+        } else {
+          console.warn('[Shell UI] dashboardApi not ready yet, waiting...');
+          setTimeout(function() {
+            if (window.dashboardApi && typeof window.dashboardApi.navigateTab === 'function') {
+              window.dashboardApi.navigateTab(tab);
+            }
+          }, 100);
+        }
+      } catch (err) {
+        console.error('[Shell UI] Error in __selectTab:', err);
+      }
+    };
+
+    window.__exportCsv = async function() {
+      if (window.dashboardApi && window.dashboardApi.exportEvents) {
+        try {
+          var csv = await window.dashboardApi.exportEvents('csv');
+          var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var link = document.createElement('a');
+          link.href = url;
+          link.download = 'walled-guard-events-' + Date.now() + '.csv';
+          link.click();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error('[Shell UI] Export failed:', err);
+        }
+      }
+    };
+
+    window.__clearData = async function() {
+      if (!confirm('Are you sure you want to clear all logged security events?')) return;
+      if (window.dashboardApi && window.dashboardApi.clearEvents) {
+        await window.dashboardApi.clearEvents();
+        alert('All security events cleared successfully.');
+      }
+    };
+
+    window.__scanFileDebug = async function() {
+      if (window.dashboardApi && window.dashboardApi.triggerDebugDialog) {
+        await window.dashboardApi.triggerDebugDialog('file');
+      }
+    };
+
+    async function pollStatus() {
+      if (window.dashboardApi && window.dashboardApi.getAppStatus) {
+        try {
+          var status = await window.dashboardApi.getAppStatus();
+          var el = document.querySelector('.db-status');
+          if (el) {
+            if (status.dbStatus === 'up') {
+              el.textContent = 'Postgres connected';
+              el.style.color = '#10b981';
+            } else {
+              el.textContent = 'In-Memory Fallback';
+              el.style.color = '#f59e0b';
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    setInterval(pollStatus, 3000);
+    setTimeout(pollStatus, 500);
+  </script>
 </head>
 <body>
   <div class="brand">
@@ -100,7 +185,7 @@
 
   <div class="section-title">WORKSPACE</div>
   <ul class="nav-list" id="workspace-nav">
-    <li class="nav-item active" data-tab="chatgpt">
+    <li class="nav-item active" data-tab="chatgpt" onclick="window.__selectTab('chatgpt')">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -108,7 +193,7 @@
         ChatGPT
       </div>
     </li>
-    <li class="nav-item" data-tab="perplexity">
+    <li class="nav-item" data-tab="perplexity" onclick="window.__selectTab('perplexity')">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
@@ -116,7 +201,7 @@
         Perplexity
       </div>
     </li>
-    <li class="nav-item" data-tab="dashboard">
+    <li class="nav-item" data-tab="dashboard" onclick="window.__selectTab('dashboard')">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -125,7 +210,7 @@
       </div>
       <span class="badge" id="badge-count">3</span>
     </li>
-    <li class="nav-item" data-tab="settings">
+    <li class="nav-item" data-tab="settings" onclick="window.__selectTab('settings')">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
@@ -137,7 +222,7 @@
 
   <div class="section-title">QUICK ACTIONS</div>
   <ul class="nav-list">
-    <li class="nav-item" id="btn-scan-file">
+    <li class="nav-item" id="btn-scan-file" onclick="window.__scanFileDebug()">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><circle cx="11" cy="14" r="3"/><line x1="13.5" y1="16.5" x2="16" y2="19"/>
@@ -145,7 +230,7 @@
         Scan a file
       </div>
     </li>
-    <li class="nav-item" id="btn-export-csv">
+    <li class="nav-item" id="btn-export-csv" onclick="window.__exportCsv()">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -153,7 +238,7 @@
         Export CSV
       </div>
     </li>
-    <li class="nav-item" id="btn-clear-data" style="color: #ef4444;">
+    <li class="nav-item" id="btn-clear-data" style="color: #ef4444;" onclick="window.__clearData()">
       <div class="nav-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -172,7 +257,5 @@
       <div class="db-status">Postgres connected</div>
     </div>
   </div>
-
-  <script src="./tabs.ts" type="module"></script>
 </body>
 </html>

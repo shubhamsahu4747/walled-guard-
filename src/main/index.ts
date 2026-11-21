@@ -33,8 +33,11 @@ async function bootstrap(): Promise<void> {
 
   // Handle tab switching requests from sidebar / renderer
   ipcMain.on(IPC_CHANNELS.NAVIGATE_TAB, (_event, tab: TabId) => {
+    logger.info(`[Main Process] Received tab switch request: ${tab}`);
     if (appWindow) {
       appWindow.tabManager.switchTab(tab);
+    } else {
+      logger.warn('[Main Process] appWindow is null on tab switch request');
     }
   });
 

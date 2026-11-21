@@ -39,6 +39,7 @@ export default defineConfig({
     }
   },
   renderer: {
+    base: './',
     resolve: {
       alias: {
         '@shared': path.resolve(__dirname, 'src/shared'),

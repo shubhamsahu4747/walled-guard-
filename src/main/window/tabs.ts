@@ -106,10 +106,14 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   const dashboardView = new WebContentsView({
     webPreferences: {
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
+      webSecurity: false,
       nodeIntegration: false,
       preload: dashboardPreload
     }
+  });
+  dashboardView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[Dashboard Console] ${msg}`);
   });
   const dashboardHtml = path.join(__dirname, '../renderer/dashboard/index.html');
   dashboardView.webContents.loadFile(dashboardHtml);
@@ -118,10 +122,14 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
   const settingsView = new WebContentsView({
     webPreferences: {
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
+      webSecurity: false,
       nodeIntegration: false,
       preload: dashboardPreload
     }
+  });
+  settingsView.webContents.on('console-message', (_e, _level, msg) => {
+    logger.info(`[Settings Console] ${msg}`);
   });
   const settingsHtml = path.join(__dirname, '../renderer/settings/index.html');
   settingsView.webContents.loadFile(settingsHtml);
@@ -162,9 +170,10 @@ export function createTabManager(parentWindow: BaseWindow): TabManager {
         v.setVisible(true);
         v.setBounds(bounds);
         try {
-          if (!parentWindow.contentView.children.includes(v)) {
-            parentWindow.contentView.addChildView(v);
+          if (parentWindow.contentView.children.includes(v)) {
+            parentWindow.contentView.removeChildView(v);
           }
+          parentWindow.contentView.addChildView(v);
         } catch {
           // view already attached
         }
