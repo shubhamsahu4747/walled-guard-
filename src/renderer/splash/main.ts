@@ -34,7 +34,7 @@ function initSplash(): void {
 
   setTimeout(() => {
     if (progressBar) progressBar.style.width = '100%';
-    if (statusLabel) statusLabel.textContent = 'Protection active · Launching...';
+    if (statusLabel) statusLabel.textContent = 'Protection engaged · Launching...';
   }, 1500);
 
   function triggerFadeOut(): void {

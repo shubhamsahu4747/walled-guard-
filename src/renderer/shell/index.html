@@ -110,8 +110,9 @@
     .brand-badge {
       font-size: 9.5px;
       font-weight: 700;
-      background: #dcfce7;
-      color: #15803d;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #475569;
       padding: 1px 5px;
       border-radius: 4px;
       letter-spacing: 0.04em;
@@ -578,18 +579,15 @@
       display: none;
     }
 
-    /* Floating Tooltip in Collapsed Mode with Smooth Slide & Fade */
+    /* Floating Tooltip in Collapsed Mode */
     body.collapsed .nav-item::before {
       display: none;
     }
 
-    .tooltip-anchor {
-      position: relative;
-    }
-
-    body.collapsed .nav-item .floating-tooltip {
+    body.collapsed .nav-item[title]::after {
+      content: attr(title);
       position: absolute;
-      left: 56px;
+      left: 58px;
       top: 50%;
       transform: translateY(-50%) translateX(-6px) scale(0.95);
       background: #0f172a;
@@ -603,11 +601,11 @@
       opacity: 0;
       transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1),
                   transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 999;
     }
 
-    body.collapsed .nav-item:hover .floating-tooltip {
+    body.collapsed .nav-item[title]:hover::after {
       opacity: 1;
       transform: translateY(-50%) translateX(4px) scale(1);
     }
@@ -776,7 +774,7 @@
       <div class="brand-info">
         <div class="brand-title">
           Walled Guard
-          <span class="brand-badge">ACTIVE</span>
+          <span class="brand-badge">v1.0</span>
         </div>
         <div class="brand-subtitle">AI DLP Sentinel</div>
       </div>
@@ -799,34 +797,31 @@
   <!-- Workspace Nav -->
   <div class="section-title">WORKSPACE</div>
   <ul class="nav-list" id="workspace-nav">
-    <li class="nav-item active" data-tab="dashboard" onclick="window.__selectTab('dashboard')">
+    <li class="nav-item active" data-tab="dashboard" title="Dashboard" onclick="window.__selectTab('dashboard')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
         </svg>
         <span class="nav-text">Dashboard</span>
       </div>
-      <span class="floating-tooltip">Dashboard</span>
     </li>
-    <li class="nav-item" data-tab="chatgpt" onclick="window.__selectTab('chatgpt')">
+    <li class="nav-item" data-tab="chatgpt" title="ChatGPT" onclick="window.__selectTab('chatgpt')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
         <span class="nav-text">ChatGPT</span>
       </div>
-      <span class="floating-tooltip">ChatGPT</span>
     </li>
-    <li class="nav-item" data-tab="perplexity" onclick="window.__selectTab('perplexity')">
+    <li class="nav-item" data-tab="perplexity" title="Perplexity" onclick="window.__selectTab('perplexity')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
         </svg>
         <span class="nav-text">Perplexity</span>
       </div>
-      <span class="floating-tooltip">Perplexity</span>
     </li>
-    <li class="nav-item" data-tab="logs" onclick="window.__selectTab('logs')">
+    <li class="nav-item" data-tab="logs" title="Audit Log" onclick="window.__selectTab('logs')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -837,16 +832,14 @@
         <span class="nav-text">Audit Log</span>
       </div>
       <span class="badge" id="badge-count" style="display: none;">0</span>
-      <span class="floating-tooltip">Audit Log</span>
     </li>
-    <li class="nav-item" data-tab="settings" onclick="window.__selectTab('settings')">
+    <li class="nav-item" data-tab="settings" title="Settings" onclick="window.__selectTab('settings')">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
         </svg>
         <span class="nav-text">Settings</span>
       </div>
-      <span class="floating-tooltip">Settings</span>
     </li>
   </ul>
 
@@ -855,46 +848,43 @@
   <!-- Quick Actions Nav -->
   <div class="section-title">QUICK ACTIONS</div>
   <ul class="nav-list">
-    <li class="nav-item" id="btn-scan-file" onclick="window.__scanFileDebug()">
+    <li class="nav-item" id="btn-scan-file" title="Scan a file" onclick="window.__scanFileDebug()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><circle cx="11" cy="14" r="3"/><line x1="13.5" y1="16.5" x2="16" y2="19"/>
         </svg>
         <span class="nav-text">Scan a file</span>
       </div>
-      <span class="floating-tooltip">Scan a file</span>
     </li>
-    <li class="nav-item" id="btn-export-csv" onclick="window.__exportCsv()">
+    <li class="nav-item" id="btn-export-csv" title="Export CSV" onclick="window.__exportCsv()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
         <span class="nav-text">Export CSV</span>
       </div>
-      <span class="floating-tooltip">Export CSV</span>
     </li>
-    <li class="nav-item danger" id="btn-clear-data" onclick="window.__clearData()">
+    <li class="nav-item danger" id="btn-clear-data" title="Clear data" onclick="window.__clearData()">
       <div class="nav-label">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
         </svg>
         <span class="nav-text">Clear data</span>
       </div>
-      <span class="floating-tooltip">Clear data</span>
     </li>
   </ul>
 
   <!-- Status Card Footer -->
   <div class="footer">
-    <div class="status-card" title="Guard Active · All AI upload channels intercepted and protected">
+    <div class="status-card" title="Protected · All AI upload channels intercepted and monitored">
       <div class="status-header">
         <div class="dot-pulse-wrapper">
           <span class="dot-ping"></span>
           <span class="dot"></span>
         </div>
-        <span class="status-title-text">Guard Active</span>
+        <span class="status-title-text">Protected</span>
       </div>
-      <div class="status-desc">ChatGPT &amp; Perplexity protected</div>
+      <div class="status-desc">ChatGPT &amp; Perplexity monitored</div>
     </div>
   </div>
 </body>
