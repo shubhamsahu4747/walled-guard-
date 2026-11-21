@@ -37,11 +37,9 @@ export function createPerplexityAdapter(): SiteAdapter {
       ],
       sendButton: [
         'button[aria-label*="Submit" i]',
-        'button[aria-label*="Search" i]',
         'button[aria-label*="Ask" i]',
         'button[aria-label*="Send" i]',
-        'button[type="submit"]',
-        'form button'
+        'button[type="submit"]'
       ],
       fileInput: [
         'input[type="file"]'

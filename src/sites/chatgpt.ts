@@ -46,8 +46,7 @@ export function createChatGPTAdapter(): SiteAdapter {
         'button[aria-label*="Submit" i]',
         'button[aria-label*="Ask" i]',
         'form button[type="submit"]',
-        'button[type="submit"]',
-        'form button'
+        'button[type="submit"]'
       ],
       fileInput: [
         'input[type="file"]'

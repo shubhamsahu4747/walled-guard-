@@ -23,18 +23,48 @@ function isEditorElement(el: Element | null, adapter: SiteAdapter): boolean {
   return false;
 }
 
-function findSendButton(adapter: SiteAdapter, target?: Element | null): HTMLElement | null {
-  if (target) {
-    for (const sel of adapter.selectors.sendButton) {
-      try {
-        const match = target.matches(sel) ? target : target.closest(sel);
-        if (match instanceof HTMLElement) return match;
-      } catch {}
-    }
-    const closestBtn = target.closest('button');
-    if (closestBtn) return closestBtn;
+function isClickOnSendButton(target: Element | null, adapter: SiteAdapter): HTMLElement | null {
+  if (!target) return null;
+
+  // 1. Check if target or parent matches any specific send button selector
+  for (const sel of adapter.selectors.sendButton) {
+    try {
+      if (target.matches(sel)) {
+        return target as HTMLElement;
+      }
+      const match = target.closest(sel);
+      if (match instanceof HTMLElement) {
+        return match;
+      }
+    } catch {}
   }
 
+  // 2. Check closest button strictly for send/submit identifiers
+  const button = target.closest('button');
+  if (button) {
+    const testId = (button.getAttribute('data-testid') || '').toLowerCase();
+    const ariaLabel = (button.getAttribute('aria-label') || '').toLowerCase();
+    const type = (button.getAttribute('type') || '').toLowerCase();
+
+    if (
+      testId.includes('send-button') ||
+      testId.includes('composer-send') ||
+      ariaLabel.includes('send prompt') ||
+      ariaLabel.includes('send message') ||
+      (ariaLabel === 'send')
+    ) {
+      return button;
+    }
+
+    if (type === 'submit' && (testId.includes('send') || ariaLabel.includes('send') || ariaLabel.includes('submit'))) {
+      return button;
+    }
+  }
+
+  return null;
+}
+
+function findSendButtonInDOM(adapter: SiteAdapter): HTMLElement | null {
   for (const sel of adapter.selectors.sendButton) {
     try {
       const el = document.querySelector(sel);
@@ -48,19 +78,16 @@ function findSendButton(adapter: SiteAdapter, target?: Element | null): HTMLElem
     } catch {}
   }
 
-  // Fallback: search all buttons on page
   const buttons = document.querySelectorAll('button');
   for (let i = 0; i < buttons.length; i++) {
     const btn = buttons[i];
     const testId = (btn.getAttribute('data-testid') || '').toLowerCase();
     const ariaLabel = (btn.getAttribute('aria-label') || '').toLowerCase();
-    const type = (btn.getAttribute('type') || '').toLowerCase();
     if (
-      testId.includes('send') ||
-      testId.includes('submit') ||
-      ariaLabel.includes('send') ||
-      ariaLabel.includes('submit') ||
-      type === 'submit'
+      testId.includes('send-button') ||
+      testId.includes('composer-send') ||
+      ariaLabel.includes('send prompt') ||
+      ariaLabel.includes('send message')
     ) {
       return btn;
     }
@@ -112,7 +139,7 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
       if (decision.action === 'allow') {
         globalGateState.setStatus('RELEASED');
         // Replay via send button click or synthetic Enter
-        const sendBtn = findSendButton(adapter);
+        const sendBtn = findSendButtonInDOM(adapter);
         if (sendBtn && !sendBtn.hasAttribute('disabled')) {
           globalGateState.markBypassed(sendBtn);
           sendBtn.click();
@@ -149,7 +176,7 @@ export function attachPromptGate(adapter: SiteAdapter, bridge: GuardBridge): voi
         return;
       }
 
-      const matchedButton = findSendButton(adapter, target);
+      const matchedButton = isClickOnSendButton(target, adapter);
       if (!matchedButton) {
         return;
       }
