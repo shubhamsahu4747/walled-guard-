@@ -22,15 +22,15 @@ Legend: [ ] todo. Each task lists its Done-when check.
   Done when: `npm run dev` opens the shell, `npm run lint` and `npm run typecheck` pass. (All passing)
 
 ## Phase 2: Scanner core (pure logic, fully unit-tested)
-- [ ] 2.1 `normalize.ts` plus tests (case, NFKC, zero-width).
-- [ ] 2.2 `streaming.ts` chunked matcher with overlap. Test: marker split across chunk boundaries, UTF-16 files.
-- [ ] 2.3 `sniff.ts` magic-byte detection (PDF `%PDF`, PNG, JPEG, WebP, GIF, text heuristic).
-- [ ] 2.4 `extractors/text.ts` and `extractors/pdf.ts` (text layer, per-page early exit, metadata).
-- [ ] 2.5 `extractors/image.ts` plus OCR worker and pool (downscale, grayscale, inverted second pass).
-- [ ] 2.6 `fuzzy.ts` OCR-tolerant matching (stripped match, then Levenshtein <= 1).
-- [ ] 2.7 `scanner/index.ts` orchestrator, verdict cache (LRU, TTL, hash key), single-flight, timeout, size cap, fail-closed `scan_failed`.
-- [ ] 2.8 `scripts/make-fixtures.ts`: generate clean and marked txt, text-layer pdf, scanned pdf, png, dark-mode png.
-  Done when: `npm test` passes the full matrix: every fixture returns the correct verdict, and a clean prompt scans in under 50 ms.
+- [x] 2.1 `normalize.ts` plus tests (case, NFKC, zero-width).
+- [x] 2.2 `streaming.ts` chunked matcher with overlap. Test: marker split across chunk boundaries, UTF-16 files.
+- [x] 2.3 `sniff.ts` magic-byte detection (PDF `%PDF`, PNG, JPEG, WebP, GIF, text heuristic).
+- [x] 2.4 `extractors/text.ts` and `extractors/pdf.ts` (text layer, per-page early exit, metadata).
+- [x] 2.5 `extractors/image.ts` plus OCR worker and pool (downscale, grayscale, inverted second pass).
+- [x] 2.6 `fuzzy.ts` OCR-tolerant matching (stripped match, then Levenshtein <= 1).
+- [x] 2.7 `scanner/index.ts` orchestrator, verdict cache (LRU, TTL, hash key), single-flight, timeout, size cap, fail-closed `scan_failed`.
+- [x] 2.8 `scripts/make-fixtures.ts`: generate clean and marked txt, text-layer pdf, scanned pdf, png, dark-mode png.
+  Done when: `npm test` passes the full matrix: every fixture returns the correct verdict, and a clean prompt scans in under 50 ms. (28/28 tests passing)
 
 ## Phase 3: Native dialog and decision engine
 - [ ] 3.1 `confirm-dialog.ts` per architecture section 9 (Continue/Cancel, Cancel default, Esc cancels).
