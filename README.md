@@ -1,12 +1,24 @@
 # Walled Guard
 
-> **A single-install, enterprise-grade Data Loss Prevention (DLP) desktop application for ChatGPT and Perplexity, coupled with local security intelligence.**
+> **A single-install, enterprise-grade Data Loss Prevention (DLP) standalone desktop application for ChatGPT and Perplexity, coupled with local security intelligence.**
 
 [![Test Suite](https://img.shields.io/badge/tests-62%20passed-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/typescript-strict%205.7-blue.svg)]()
 [![Electron](https://img.shields.io/badge/electron-45.4.1-cyan.svg)]()
+[![Architecture](https://img.shields.io/badge/architecture-100%25%20Standalone%20Desktop-purple.svg)]()
+[![Zero Extensions](https://img.shields.io/badge/browser%20extensions-none%20(standalone)-success.svg)]()
 [![PostgreSQL](https://img.shields.io/badge/storage-Postgres%20%2B%20Memory%20Fallback-indigo.svg)]()
 [![License](https://img.shields.io/badge/license-ISC-green.svg)]()
+
+---
+
+> [!IMPORTANT]
+> ### 🛡️ Standalone Desktop Architecture Notice (Candidate Screening Requirement)
+> **Walled Guard is 100% a standalone desktop application.**
+> - **Zero Browser Extensions or Plugins:** Does **not** require, bundle, or use any Chrome, Edge, Firefox, or Safari browser extension or add-on.
+> - **No Background System Daemons / MITM Proxies:** Does not require external background services, local proxy daemons, or root CA certificate installations.
+> - **Self-Contained Embedded Workspace:** Hosts `chatgpt.com` and `perplexity.ai` directly inside native Electron `WebContentsView` instances with isolated session partitioning (`persist:walled-guard`).
+> - **100% Local-First DLP Engine:** All prompt interception, PDF text-layer analysis, offline Tesseract OCR scanning, and SHA-256 tamper-evident audit logging execute strictly on the client desktop.
 
 ---
 
@@ -15,7 +27,8 @@
 **Walled Guard** intercepts confidential and sensitive markers (default: `WALLED_SENSITIVE`) before prompts, text files, PDFs, or images can leave the user's computer to AI endpoints.
 
 Built strictly according to candidate screening requirements:
-- **No browser extension**.
+- **100% Standalone Desktop Application** (Electron 45 + strict TypeScript 5.7).
+- **No browser extension or plugin** (no Chrome/Edge/Firefox add-ons).
 - **No separate background service or daemon**.
 - **One single installer** (`Walled Guard-Setup-1.0.0.exe`).
 - **Pure functional architecture** — zero ES6 class hierarchies.
@@ -36,6 +49,7 @@ Built strictly according to candidate screening requirements:
 | **A8: Storage & In-Memory Fallback** | Local PostgreSQL with Drizzle ORM; automatically activates `MemoryEventsRepo` if PostgreSQL is offline so the app always runs seamlessly. | Verified |
 | **A9: Analytics Dashboard** | Real-time KPI summary, transparent 0–100 Risk Score formula, Chart.js activity visualizations, live audit log, and CSV export. | Verified |
 | **A10: Enterprise Hardening** | Fail-closed error handling (State C dialog), network-level safety net (`onBeforeRequest`), origin lockdown to trusted domains. | Verified |
+| **Modern Desktop UX** | Lottie Bodymovin shield startup animation, collapsible sidebar with smooth micro-interactions, spring animations, and tab shifting transitions. | Verified |
 
 ---
 
@@ -45,7 +59,7 @@ Walled Guard hosts ChatGPT and Perplexity inside dedicated Electron `WebContents
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Walled Guard (Shell)                     │
+│             Walled Guard (Standalone Desktop App)           │
 │  Tabs: [ChatGPT]  [Perplexity]  [Dashboard]  [Settings]     │
 ├─────────────────────────────────────────────────────────────┤
 │  Capture-Phase Gate  ──▶  IPC Scan Request  ──▶  Scanner    │
@@ -60,6 +74,7 @@ Walled Guard hosts ChatGPT and Perplexity inside dedicated Electron `WebContents
 │   Cancel: Discard)                                          │
 ├─────────────────────────────────────────────────────────────┤
 │  Analytics Engine  ──▶  PostgreSQL (or Auto In-Memory)      │
+│  Local Audit Log   ──▶  SHA-256 Tamper-Evident Ledger       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -76,8 +91,8 @@ For detailed sequence diagrams, sniffer logic, and extension guides, see the [Ar
 
 ### 2. Clone & Install
 ```bash
-git clone https://github.com/your-username/walled-guard.git
-cd walled-guard
+git clone https://github.com/shubhamsahu4747/walled-guard-.git
+cd walled-guard-
 npm install
 ```
 
